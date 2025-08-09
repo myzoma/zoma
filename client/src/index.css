@@ -150,9 +150,38 @@
   }
 }
 
-/* خط عربي واضح */
+/* خط عربي واضح وتخطيط عربي */
 * {
   font-family: 'Tajawal', 'Inter', system-ui, sans-serif !important;
+}
+
+/* تخطيط عربي من اليمين لليسار */
+html {
+  direction: rtl;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}
+
+body {
+  text-align: right;
+}
+
+/* إصلاح عناصر معينة للتخطيط العربي */
+.space-x-2 > * + * {
+  margin-left: 0 !important;
+  margin-right: 0.5rem !important;
+}
+
+.space-x-4 > * + * {
+  margin-left: 0 !important;
+  margin-right: 1rem !important;
+}
+
+.space-x-6 > * + * {
+  margin-left: 0 !important;
+  margin-right: 1.5rem !important;
 }
 
 /* تأثيرات سحرية */
