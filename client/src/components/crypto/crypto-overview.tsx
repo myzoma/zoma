@@ -6,12 +6,7 @@ export function CryptoOverview() {
   return (
     <div className="mb-8">
       {/* تم حذف العنوان والوصف حسب طلب المستخدم */}
-      <div className="flex items-center justify-end mb-6">
-        <Badge variant="secondary" className="text-sm">
-          <Activity className="h-4 w-4 mr-2" />
-          نشط
-        </Badge>
-      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="shadow-container card-enhanced">
