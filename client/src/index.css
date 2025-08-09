@@ -3,6 +3,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* إعداد التخطيط العربي الشامل من اليمين إلى اليسار */
+html {
+  direction: rtl;
+}
+
+body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* فئات مساعدة للتخطيط العربي */
+.rtl-flex {
+  flex-direction: row-reverse;
+}
+
+.rtl-text {
+  text-align: right;
+  direction: rtl;
+}
+
+.ltr-override {
+  direction: ltr !important;
+}
+
+/* إصلاح المسافات للمواقع العربية */
+.space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  margin-right: 0.5rem;
+  margin-left: 0;
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(210, 25%, 7.8431%);
