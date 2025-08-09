@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CryptoOverview } from "@/components/crypto/crypto-overview";
 import { WaveAnalysisPanel } from "@/components/crypto/wave-analysis-panel";
-import { MarketData } from "@/components/crypto/market-data";
+import { MarketData } from "@/components/crypto/market-data-real";
 import { TradingSignals } from "@/components/crypto/trading-signals";
 
 export default function Dashboard() {

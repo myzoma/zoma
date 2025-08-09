@@ -5,7 +5,6 @@ import { TrendingUp, TrendingDown, RefreshCw, DollarSign, Volume2, Wifi, WifiOff
 import { cryptoDataService, type CryptoPriceData } from "@/lib/cryptoAPI";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ElliottWaveAnalyzer } from "../../lib/elliottWaveAnalyzer.js";
 
 export function MarketData() {
   const [cryptoData, setCryptoData] = useState<CryptoPriceData[]>([]);
@@ -67,34 +66,6 @@ export function MarketData() {
     return () => clearInterval(interval);
   }, []);
 
-  // تحليل موجات إليوت للبيانات الحقيقية
-  const analyzeElliottWave = (priceData: CryptoPriceData) => {
-    try {
-      const analyzer = new ElliottWaveAnalyzer();
-      
-      // محاكاة بيانات تاريخية للتحليل
-      const historicalData = Array.from({ length: 50 }, (_, i) => ({
-        high: priceData.price * (1 + Math.random() * 0.1),
-        low: priceData.price * (1 - Math.random() * 0.1),
-        close: priceData.price * (1 + (Math.random() - 0.5) * 0.05),
-        volume: priceData.volume24h / 24
-      }));
-      
-      const analysis = analyzer.analyzeMarketData(historicalData);
-      
-      return {
-        pattern: analysis.patterns.length > 0 ? 
-          (analysis.patterns[0].type === 'motive' ? 'دافعة' : 'تصحيحية') : 'غير محدد',
-        confidence: analysis.patterns.length > 0 ? 
-          Math.round(analysis.patterns[0].confidence) : 0,
-        direction: priceData.changePercent24h >= 0 ? 'صاعدة' : 'هابطة'
-      };
-    } catch (error) {
-      console.warn('خطأ في تحليل موجات إليوت:', error);
-      return { pattern: 'غير محدد', confidence: 0, direction: 'محايدة' };
-    }
-  };
-
   // تنسيق القيم
   const formatPrice = (price: number) => {
     if (price >= 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -117,81 +88,60 @@ export function MarketData() {
     return formatVolume(marketCap);
   };
 
-  // البيانات المعروضة (الحقيقية أو الوهمية في حالة الطوارئ)
-  const displayData = cryptoData.length > 0 ? cryptoData : [];
-
   const renderCryptoRow = (crypto: CryptoPriceData) => {
-    const elliott = analyzeElliottWave(crypto);
     const isPositive = crypto.changePercent24h > 0;
     const Icon = isPositive ? TrendingUp : TrendingDown;
     const changeColor = isPositive ? "text-green-600" : "text-red-600";
     const bgColor = isPositive ? "bg-green-50 dark:bg-green-950" : "bg-red-50 dark:bg-red-950";
 
     return (
-      <div key={crypto.symbol} className={`p-4 rounded-lg border ${bgColor} border-gray-200 dark:border-gray-700`}>
+      <div key={crypto.symbol} className={`p-4 rounded-lg border ${bgColor} border-gray-200 dark:border-gray-700 shadow-soft`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div>
               <h3 className="font-semibold text-lg">{crypto.symbol}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{crypto.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {crypto.symbol.split('/')[0]}
+              </p>
             </div>
           </div>
           
           <div className="text-right">
             <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold">${crypto.price.toLocaleString()}</span>
+              <span className="text-xl font-bold">${formatPrice(crypto.price)}</span>
               <Icon className={`h-5 w-5 ${changeColor}`} />
             </div>
             <div className={`text-sm ${changeColor} font-medium`}>
-              {isPositive ? '+' : ''}{crypto.change24h.toFixed(2)}%
+              {isPositive ? '+' : ''}{crypto.changePercent24h.toFixed(2)}%
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-3">
           <div>
-            <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mb-1">
-              <Volume2 className="h-3 w-3 mr-1" />
-              الحجم 24س
-            </div>
-            <div className="font-semibold">{crypto.volume}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">الحجم 24س</div>
+            <div className="font-semibold">{formatVolume(crypto.volume24h)}</div>
           </div>
-          
           <div>
-            <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mb-1">
-              <DollarSign className="h-3 w-3 mr-1" />
-              القيمة السوقية
-            </div>
-            <div className="font-semibold">{crypto.marketCap}</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">أعلى 24س</div>
+            <div className="font-semibold text-green-600">${formatPrice(crypto.high24h)}</div>
           </div>
-          
           <div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">نمط إليوت</div>
-            <Badge variant="outline" className="text-xs">
-              {crypto.elliott.pattern}
-            </Badge>
-          </div>
-          
-          <div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">مستوى الثقة</div>
-            <div className="font-semibold text-blue-600">
-              {crypto.elliott.confidence}%
-            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">أقل 24س</div>
+            <div className="font-semibold text-red-600">${formatPrice(crypto.low24h)}</div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <Badge 
-            variant={crypto.elliott.direction === 'صاعدة' ? 'default' : 'destructive'}
-            className="text-xs"
-          >
-            توقع {crypto.elliott.direction}
-          </Badge>
-          
-          <Button variant="outline" size="sm" className="text-xs">
-            تفاصيل التحليل
-          </Button>
-        </div>
+        {crypto.marketCap && (
+          <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              القيمة السوقية: ${formatMarketCap(crypto.marketCap)}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-500">
+              آخر تحديث: {new Date(crypto.lastUpdate).toLocaleTimeString('ar')}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -206,19 +156,77 @@ export function MarketData() {
               بيانات السوق المباشرة
             </CardTitle>
             <CardDescription>
-              أسعار العملات الرقمية مع تحليل موجات إليوت
+              أسعار العملات الرقمية الحقيقية من {availableProviders.join(', ')}
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            تحديث
-          </Button>
+          <div className="flex items-center space-x-2">
+            {availableProviders.length > 0 ? (
+              <Badge variant="secondary" className="flex items-center space-x-1">
+                <Wifi className="h-3 w-3" />
+                <span>متصل</span>
+              </Badge>
+            ) : (
+              <Badge variant="destructive" className="flex items-center space-x-1">
+                <WifiOff className="h-3 w-3" />
+                <span>غير متصل</span>
+              </Badge>
+            )}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => fetchRealData(true)}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              تحديث
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {cryptoData.map(renderCryptoRow)}
-        </div>
+        {error && (
+          <div className="flex items-center p-4 mb-4 text-sm text-red-800 bg-red-50 rounded-lg dark:bg-red-950 dark:text-red-200">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            خطأ: {error}
+          </div>
+        )}
+        
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="flex items-center justify-between p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-24"></div>
+                    <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-16"></div>
+                  </div>
+                  <div className="space-y-2 text-right">
+                    <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                    <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-20"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : cryptoData.length > 0 ? (
+          <div className="space-y-4">
+            {cryptoData.map(renderCryptoRow)}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <WifiOff className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              لا توجد بيانات متاحة
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              تعذر الحصول على البيانات من مصادر البيانات الخارجية
+            </p>
+            <Button onClick={() => fetchRealData(true)}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              إعادة المحاولة
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
