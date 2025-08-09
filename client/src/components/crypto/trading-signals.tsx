@@ -252,15 +252,15 @@ export function TradingSignals() {
         <div className="grid grid-cols-3 gap-3 text-sm">
           <div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">دخول</div>
-            <div className="font-semibold">${signal.entryPrice}</div>
+            <div className="font-semibold">${signal.entryPrice.toFixed(2)}</div>
           </div>
           <div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">هدف</div>
-            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.targetPrice}</div>
+            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.targetPrice.toFixed(2)}</div>
           </div>
           <div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">إيقاف</div>
-            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.stopLoss}</div>
+            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.stopLoss.toFixed(2)}</div>
           </div>
         </div>
 
