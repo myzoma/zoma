@@ -1,4 +1,4 @@
-import { Rocket, Sun, Moon, ChevronDown, Menu, X } from "lucide-react";
+import { TrendingUp, Sun, Moon, ChevronDown, Menu, X } from "lucide-react";
 import { useTheme } from "../theme-provider";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
@@ -10,10 +10,10 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
-    { name: "Dashboard", href: "/", current: location === "/" },
-    { name: "Deployments", href: "/deployments", current: location === "/deployments" },
-    { name: "Settings", href: "/settings", current: location === "/settings" },
-    { name: "Documentation", href: "/docs", current: location === "/docs" },
+    { name: "لوحة التحكم", href: "/", current: location === "/" },
+    { name: "التحليلات", href: "/deployments", current: location === "/deployments" },
+    { name: "الإعدادات", href: "/settings", current: location === "/settings" },
+    { name: "التوثيق", href: "/docs", current: location === "/docs" },
   ];
 
   const toggleTheme = () => {
@@ -26,10 +26,10 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-gradient-to-br from-github-primary to-github-secondary rounded-lg flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">Vi2-Clean</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">محلل موجات إليوت</span>
             </Link>
             <nav className="hidden md:flex space-x-6">
               {navigation.map((item) => (
