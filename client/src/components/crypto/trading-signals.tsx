@@ -199,15 +199,12 @@ export function TradingSignals() {
   const renderSignalCard = (signal: any) => {
     const isBuy = signal.type === 'buy';
     const Icon = isBuy ? TrendingUp : TrendingDown;
-    const signalColor = isBuy ? 'text-green-600' : 'text-red-600';
-    const bgColor = isBuy ? 'bg-green-50 dark:bg-green-950' : 'bg-red-50 dark:bg-red-950';
-    const borderColor = isBuy ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800';
 
     return (
-      <div key={signal.id} className={`p-4 rounded-lg border ${bgColor} ${borderColor} shadow-soft`}>
+      <div key={signal.id} className="p-4 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-soft">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            <Icon className={`h-5 w-5 ${signalColor}`} />
+            <Icon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             <span className="font-semibold">{signal.pair}</span>
             <Badge variant="outline" className="text-xs">
               {signal.timeFrame}
@@ -228,7 +225,7 @@ export function TradingSignals() {
           </div>
           <div className="text-sm">
             <span className="text-gray-600 dark:text-gray-400">الثقة:</span>
-            <span className={`ml-2 font-medium ${signalColor}`}>{signal.confidence}%</span>
+            <span className="ml-2 font-medium text-gray-800 dark:text-gray-200">{signal.confidence}%</span>
           </div>
         </div>
 
@@ -241,11 +238,11 @@ export function TradingSignals() {
           </div>
           <div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">هدف</div>
-            <div className="font-semibold text-green-600">${signal.targetPrice}</div>
+            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.targetPrice}</div>
           </div>
           <div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">إيقاف</div>
-            <div className="font-semibold text-red-600">${signal.stopLoss}</div>
+            <div className="font-semibold text-gray-800 dark:text-gray-200">${signal.stopLoss}</div>
           </div>
         </div>
 
