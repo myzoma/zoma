@@ -187,12 +187,12 @@ export function WaveAnalysisPanel() {
             </Badge>
           </div>
           <CardDescription>
-            مستوى الثقة: {Math.round(pattern.confidence)}%
+            مستوى الثقة: {Math.round(pattern.confidence || 0)}%
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <Progress value={pattern.confidence} className="h-2" />
+            <Progress value={Math.max(0, Math.min(100, pattern.confidence || 0))} className="h-2" />
             
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -332,6 +332,116 @@ export function WaveAnalysisPanel() {
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
                           جرب تغيير الإطار الزمني أو العملة الرقمية
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="summary" className="mt-4">
+                    {analysisResult.success && analysisResult.patterns?.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="p-4 border rounded-lg">
+                            <h4 className="font-semibold mb-2">عدد الأنماط المكتشفة</h4>
+                            <p className="text-2xl font-bold text-blue-600">{analysisResult.patterns.length}</p>
+                          </div>
+                          <div className="p-4 border rounded-lg">
+                            <h4 className="font-semibold mb-2">متوسط الثقة</h4>
+                            <p className="text-2xl font-bold text-green-600">
+                              {Math.round(analysisResult.patterns.reduce((sum: number, p: any) => sum + (p.confidence || 0), 0) / analysisResult.patterns.length || 0)}%
+                            </p>
+                          </div>
+                        </div>
+                        <div className="p-4 border rounded-lg">
+                          <h4 className="font-semibold mb-2">أقوى نمط</h4>
+                          {(() => {
+                            const bestPattern = analysisResult.patterns.reduce((best: any, current: any) => 
+                              (current.confidence || 0) > (best.confidence || 0) ? current : best
+                            );
+                            return (
+                              <div className="flex items-center justify-between">
+                                <span>{bestPattern.type === 'motive' ? 'نمط دافع' : 'نمط تصحيحي'}</span>
+                                <Badge variant={bestPattern.direction === 'bullish' ? 'default' : 'destructive'}>
+                                  ثقة: {Math.round(bestPattern.confidence || 0)}%
+                                </Badge>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-600 dark:text-gray-400">لا توجد بيانات ملخص متاحة</p>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="fibonacci" className="mt-4">
+                    {analysisResult.success && analysisResult.patterns?.length > 0 ? (
+                      <div className="space-y-4">
+                        {(() => {
+                          const bestPattern = analysisResult.patterns.reduce((best: any, current: any) => 
+                            (current.confidence || 0) > (best.confidence || 0) ? current : best
+                          );
+                          
+                          // حساب مستويات فيبوناتشي من أقوى نمط
+                          const waves = Array.isArray(bestPattern.waves) ? bestPattern.waves : [];
+                          const highPrice = waves.length > 0 ? waves.reduce((max: number, wave: any) => 
+                            Math.max(max, wave.price || 0), 0) : 100;
+                          const lowPrice = waves.length > 0 ? waves.reduce((min: number, wave: any) => 
+                            Math.min(min, wave.price || Infinity), Infinity) : 80;
+                          
+                          const range = highPrice - lowPrice;
+                          const fibLevels = [
+                            { level: 0, price: lowPrice, name: "0% - أدنى سعر" },
+                            { level: 23.6, price: lowPrice + (range * 0.236), name: "23.6% - دعم ضعيف" },
+                            { level: 38.2, price: lowPrice + (range * 0.382), name: "38.2% - دعم متوسط" },
+                            { level: 50, price: lowPrice + (range * 0.5), name: "50% - نقطة التوازن" },
+                            { level: 61.8, price: lowPrice + (range * 0.618), name: "61.8% - مقاومة قوية" },
+                            { level: 78.6, price: lowPrice + (range * 0.786), name: "78.6% - مقاومة عالية" },
+                            { level: 100, price: highPrice, name: "100% - أعلى سعر" }
+                          ];
+                          
+                          return (
+                            <div>
+                              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                                <Target className="h-4 w-4" />
+                                مستويات فيبوناتشي للنمط الأقوى
+                              </h4>
+                              <div className="space-y-2">
+                                {fibLevels.map((fib, index) => (
+                                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-3 h-3 rounded-full ${
+                                        fib.level === 0 || fib.level === 100 ? 'bg-red-500' :
+                                        fib.level === 50 ? 'bg-yellow-500' :
+                                        fib.level === 61.8 ? 'bg-green-500' : 'bg-blue-500'
+                                      }`} />
+                                      <span className="font-medium">{fib.level}%</span>
+                                      <span className="text-sm text-gray-600 dark:text-gray-400">{fib.name}</span>
+                                    </div>
+                                    <span className="font-mono font-semibold">${fib.price.toFixed(2)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <p className="text-sm text-blue-800 dark:text-blue-200">
+                                  <strong>ملاحظة:</strong> مستويات فيبوناتشي محسوبة من أعلى وأدنى نقطة في النمط الأقوى. 
+                                  المستويات 38.2% و 61.8% هي الأهم للدعم والمقاومة.
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Target className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-600 dark:text-gray-400">
+                          لا توجد بيانات كافية لحساب مستويات فيبوناتشي
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                          قم بتشغيل التحليل أولاً للحصول على مستويات فيبوناتشي
                         </p>
                       </div>
                     )}
