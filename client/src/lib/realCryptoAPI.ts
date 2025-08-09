@@ -100,33 +100,28 @@ class FreeRealDataProvider {
         
         if (ticker) {
           const currentPrice = parseFloat(ticker.last);
-          let changePercent24h = parseFloat(ticker.chgPc);
-          const change24h = parseFloat(ticker.chg);
+          const open24h = parseFloat(ticker.open24h);
           const high24h = parseFloat(ticker.high24h);
           const low24h = parseFloat(ticker.low24h);
           const volume24h = parseFloat(ticker.vol24h);
 
-          // OKX sometimes returns chgPc as a percentage already, sometimes as decimal
-          if (!isNaN(changePercent24h)) {
-            // If the value is between -1 and 1, it's likely a decimal, so multiply by 100
-            if (Math.abs(changePercent24h) <= 1) {
-              changePercent24h = changePercent24h * 100;
-            }
-          } else {
-            // If chgPc is invalid, try to calculate from chg and current price
-            if (!isNaN(change24h) && currentPrice > 0) {
-              changePercent24h = (change24h / (currentPrice - change24h)) * 100;
-            } else {
-              changePercent24h = 0; // Default to 0 if we can't calculate
-            }
+          // حساب النسبة المئوية للتغيير من السعر الحالي وسعر الافتتاح
+          let changePercent24h = 0;
+          let change24h = 0;
+          
+          if (!isNaN(currentPrice) && !isNaN(open24h) && open24h > 0) {
+            change24h = currentPrice - open24h;
+            changePercent24h = (change24h / open24h) * 100;
           }
 
-          // التأكد من صحة السعر فقط - نسبة التغيير يمكن أن تكون 0
+
+
+          // التأكد من صحة السعر
           if (!isNaN(currentPrice) && currentPrice > 0) {
             results.push({
               symbol,
               price: currentPrice,
-              change24h: !isNaN(change24h) ? change24h : (currentPrice * changePercent24h) / 100,
+              change24h: change24h,
               changePercent24h: changePercent24h,
               high24h: !isNaN(high24h) ? high24h : currentPrice * 1.05,
               low24h: !isNaN(low24h) ? low24h : currentPrice * 0.95,
