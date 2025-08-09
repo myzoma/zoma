@@ -203,26 +203,66 @@ export function TradingSignals() {
     return () => clearInterval(interval);
   }, []);
 
-  const alerts = [
-    {
-      id: 1,
-      message: "BTC/USDT اقترب من الهدف الأول",
-      type: "success",
-      timestamp: "منذ 15 دقيقة"
-    },
-    {
-      id: 2,
-      message: "SOL/USDT كسر مستوى الدعم المهم",
-      type: "warning", 
-      timestamp: "منذ 45 دقيقة"
-    },
-    {
-      id: 3,
-      message: "نمط دافع جديد في MATIC/USDT",
-      type: "info",
-      timestamp: "منذ ساعة واحدة"
+  // توليد التنبيهات الحقيقية من إشارات التداول والتحليل
+  const generateRealAlerts = () => {
+    const realAlerts = [];
+    
+    if (signals && signals.length > 0) {
+      const currentSignal = signals[0]; // الإشارة الحالية للعملة المختارة
+      
+      // تنبيه حول الإشارة الحالية
+      if (currentSignal.confidence > 75) {
+        realAlerts.push({
+          id: 1,
+          message: `${currentSignal.pair} إشارة قوية ${currentSignal.type === 'buy' ? 'شراء' : 'بيع'} بثقة ${currentSignal.confidence}%`,
+          type: "success",
+          timestamp: "الآن"
+        });
+      } else if (currentSignal.confidence > 60) {
+        realAlerts.push({
+          id: 1,
+          message: `${currentSignal.pair} إشارة متوسطة ${currentSignal.type === 'buy' ? 'شراء' : 'بيع'} بثقة ${currentSignal.confidence}%`,
+          type: "info",
+          timestamp: "الآن"
+        });
+      }
+      
+      // تنبيه حول نسبة الربح المحتملة
+      const profitPercent = Math.abs(((currentSignal.targetPrice - currentSignal.entryPrice) / currentSignal.entryPrice) * 100);
+      if (profitPercent > 3) {
+        realAlerts.push({
+          id: 2,
+          message: `${currentSignal.pair} فرصة ربح متوقعة ${profitPercent.toFixed(1)}%`,
+          type: "success",
+          timestamp: "منذ دقائق"
+        });
+      }
+      
+      // تنبيه حول نمط موجات إليوت
+      if (currentSignal.pattern && currentSignal.realAnalysis) {
+        realAlerts.push({
+          id: 3,
+          message: `${currentSignal.pair} نمط موجة ${currentSignal.pattern} مكتشف`,
+          type: "info",
+          timestamp: "منذ 5 دقائق"
+        });
+      }
     }
-  ];
+    
+    // إضافة تنبيهات عامة إذا لم تكن هناك إشارات
+    if (realAlerts.length === 0) {
+      realAlerts.push({
+        id: 1,
+        message: `${selectedCrypto || 'BTC/USDT'} تحليل موجات إليوت جاري التحديث`,
+        type: "info",
+        timestamp: "منذ دقائق"
+      });
+    }
+    
+    return realAlerts;
+  };
+  
+  const alerts = generateRealAlerts();
 
   const renderSignalCard = (signal: any) => {
     const isBuy = signal.type === 'buy';
@@ -362,31 +402,42 @@ export function TradingSignals() {
         </CardContent>
       </Card>
 
-      {/* الإحصائيات */}
+      {/* الإحصائيات الحقيقية */}
       <Card className="shadow-container magical-card backdrop-blur-lg border-0 shadow-2xl">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Target className="h-5 w-5 mr-2" />
-            إحصائيات الأداء
+            إحصائيات {selectedCrypto || "BTC/USDT"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">84%</div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">معدل النجاح</p>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {signals.length > 0 ? `${signals[0].confidence}%` : "---"}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">مستوى الثقة</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">7</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {signals.length}
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">إشارات نشطة</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">156</div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي الإشارات</p>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {signals.length > 0 ? (signals[0].realAnalysis ? "حقيقي" : "تقديري") : "---"}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">نوع التحليل</p>
             </div>
             <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">+23%</div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">العائد الشهري</p>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {signals.length > 0 ? 
+                  `${(Math.abs((signals[0].targetPrice - signals[0].entryPrice) / signals[0].entryPrice) * 100).toFixed(1)}%`
+                  : "---"
+                }
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">الربح المتوقع</p>
             </div>
           </div>
         </CardContent>
