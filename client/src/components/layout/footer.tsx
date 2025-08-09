@@ -24,9 +24,9 @@ export function Footer() {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">
-                <span className="text-yellow-500">ياسر</span>{" "}
-                <span className="text-sky-500">كريبتو</span>
+              <span className="text-2xl font-bold">
+                <span className="text-yellow-500">YASER</span>{" "}
+                <span className="text-sky-500">CRYPTO</span>
               </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
