@@ -21,7 +21,7 @@ export function Header() {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse-slow">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <div className="flex flex-col items-end text-right">
+              <div className="flex flex-col items-start text-right">
                 <span className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   العملات الرقمية
                 </span>
