@@ -75,7 +75,7 @@ export function WaveAnalysisPanel() {
     const iconColor = pattern.direction === 'bullish' ? 'text-green-600' : 'text-red-600';
     
     return (
-      <Card key={pattern.id || Math.random()} className="mb-4">
+      <Card key={pattern.id || Math.random()} className="mb-4 shadow-soft">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -141,7 +141,7 @@ export function WaveAnalysisPanel() {
   };
 
   return (
-    <Card>
+    <Card className="shadow-container card-enhanced">
       <CardHeader>
         <CardTitle className="flex items-center">
           <BarChart3 className="h-5 w-5 mr-2" />

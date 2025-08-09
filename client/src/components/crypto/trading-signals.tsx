@@ -76,7 +76,7 @@ export function TradingSignals() {
     const borderColor = isBuy ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800';
 
     return (
-      <div key={signal.id} className={`p-4 rounded-lg border ${bgColor} ${borderColor}`}>
+      <div key={signal.id} className={`p-4 rounded-lg border ${bgColor} ${borderColor} shadow-soft`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Icon className={`h-5 w-5 ${signalColor}`} />
@@ -149,7 +149,7 @@ export function TradingSignals() {
     };
 
     return (
-      <div key={alert.id} className={`p-3 rounded-lg border text-sm ${getAlertStyle(alert.type)}`}>
+      <div key={alert.id} className={`p-3 rounded-lg border text-sm ${getAlertStyle(alert.type)} shadow-soft`}>
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <p className="font-medium">{alert.message}</p>
@@ -167,7 +167,7 @@ export function TradingSignals() {
   return (
     <div className="space-y-6">
       {/* إشارات التداول */}
-      <Card>
+      <Card className="shadow-container card-enhanced">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Signal className="h-5 w-5 mr-2" />
@@ -185,7 +185,7 @@ export function TradingSignals() {
       </Card>
 
       {/* التنبيهات */}
-      <Card>
+      <Card className="shadow-container card-enhanced">
         <CardHeader>
           <CardTitle className="flex items-center">
             <AlertTriangle className="h-5 w-5 mr-2" />
@@ -203,7 +203,7 @@ export function TradingSignals() {
       </Card>
 
       {/* الإحصائيات */}
-      <Card>
+      <Card className="shadow-container card-enhanced">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Target className="h-5 w-5 mr-2" />
@@ -212,19 +212,19 @@ export function TradingSignals() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg shadow-soft">
               <div className="text-2xl font-bold text-green-600">84%</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">معدل النجاح</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg shadow-soft">
               <div className="text-2xl font-bold text-blue-600">7</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">إشارات نشطة</p>
             </div>
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg">
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg shadow-soft">
               <div className="text-2xl font-bold text-purple-600">156</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي الإشارات</p>
             </div>
-            <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg">
+            <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg shadow-soft">
               <div className="text-2xl font-bold text-orange-600">+23%</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">العائد الشهري</p>
             </div>

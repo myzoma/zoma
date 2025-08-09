@@ -119,7 +119,7 @@ export function MarketData() {
   };
 
   return (
-    <Card>
+    <Card className="shadow-container card-enhanced">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

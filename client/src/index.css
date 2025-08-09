@@ -40,14 +40,14 @@
   --font-serif: Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
   --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 2px 4px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 4px 6px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 8px 10px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-2xs: 0px 1px 2px 0px rgba(255, 255, 255, 0.1), 0px 1px 3px 0px rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0px 1px 3px 0px rgba(255, 255, 255, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0px 1px 2px 0px rgba(255, 255, 255, 0.08), 0px 1px 3px 0px rgba(0, 0, 0, 0.06);
+  --shadow: 0px 1px 3px 0px rgba(255, 255, 255, 0.1), 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0px 4px 6px -1px rgba(255, 255, 255, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0px 10px 15px -3px rgba(255, 255, 255, 0.1), 0px 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0px 20px 25px -5px rgba(255, 255, 255, 0.1), 0px 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0px 25px 50px -12px rgba(255, 255, 255, 0.25), 0px 8px 16px -4px rgba(0, 0, 0, 0.08);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
@@ -98,14 +98,14 @@
   --font-serif: Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
   --radius: 1.3rem;
-  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-sm: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-md: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 2px 4px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-lg: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 4px 6px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 8px 10px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
-  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-2xs: 0px 1px 2px 0px rgba(255, 255, 255, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+  --shadow-xs: 0px 1px 3px 0px rgba(255, 255, 255, 0.2), 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0px 1px 2px 0px rgba(255, 255, 255, 0.12), 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+  --shadow: 0px 1px 3px 0px rgba(255, 255, 255, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0px 4px 6px -1px rgba(255, 255, 255, 0.15), 0px 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0px 10px 15px -3px rgba(255, 255, 255, 0.15), 0px 4px 6px -2px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0px 20px 25px -5px rgba(255, 255, 255, 0.15), 0px 10px 10px -5px rgba(0, 0, 0, 0.08);
+  --shadow-2xl: 0px 25px 50px -12px rgba(255, 255, 255, 0.3), 0px 8px 16px -4px rgba(0, 0, 0, 0.12);
   
   /* GitHub-inspired colors for dark mode */
   --github-primary: hsl(213.77, 100%, 62.75%);
@@ -134,5 +134,48 @@
 
   .animate-bounce-gentle {
     animation: bounce 2s infinite;
+  }
+
+  /* Enhanced shadows for better visibility */
+  .shadow-soft {
+    box-shadow: 0 2px 4px 0 rgba(255, 255, 255, 0.1), 
+                0 1px 3px 0 rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .dark .shadow-soft {
+    box-shadow: 0 2px 4px 0 rgba(255, 255, 255, 0.2), 
+                0 1px 3px 0 rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .shadow-container {
+    box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.12), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .shadow-container {
+    box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.18), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .card-enhanced {
+    background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.9), 
+                rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .card-enhanced {
+    background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 }
