@@ -10,6 +10,8 @@ import { useToast } from "@/hooks/use-toast";
 export function MarketData() {
   const [cryptoData, setCryptoData] = useState<CryptoPriceData[]>([]);
   const [topGainers, setTopGainers] = useState<CryptoPriceData[]>([]);
+  const [topLosers, setTopLosers] = useState<CryptoPriceData[]>([]);
+  const [viewMode, setViewMode] = useState<'gainers' | 'losers' | 'all'>('gainers');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSource, setCurrentSource] = useState<string>("");
@@ -34,16 +36,23 @@ export function MarketData() {
       const gainers = data
         .filter(crypto => crypto.changePercent24h > 0) // فقط العملات الرابحة
         .sort((a, b) => b.changePercent24h - a.changePercent24h) // ترتيب تنازلي
-        .slice(0, 10); // أفضل 10 رابحين
+        .slice(0, 8); // أفضل 8 رابحين
+      
+      // ترتيب العملات حسب أكبر نسبة خسارة في 24 ساعة
+      const losers = data
+        .filter(crypto => crypto.changePercent24h < 0) // فقط العملات الخاسرة
+        .sort((a, b) => a.changePercent24h - b.changePercent24h) // ترتيب تصاعدي (أكبر خسارة أولاً)
+        .slice(0, 8); // أكبر 8 خاسرين
       
       setTopGainers(gainers);
+      setTopLosers(losers);
       setCurrentSource("OKX Exchange");
       setAvailableProviders(["OKX", "Binance", "Kraken", "Coinbase"]);
       
       if (showToast && data.length > 0) {
         toast({
-          title: "تم تحديث البيانات",
-          description: `تم جلب ${data.length} عملة من مصادر حقيقية`,
+          title: "تحديث أعلى الرابحين",
+          description: `تم العثور على ${gainers.length} عملة رابحة من أصل ${data.length}`,
         });
       }
       
