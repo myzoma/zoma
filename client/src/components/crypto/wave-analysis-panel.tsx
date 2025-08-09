@@ -9,11 +9,10 @@ import { TrendingUp, TrendingDown, BarChart3, Activity, Target, AlertCircle } fr
 // @ts-ignore
 import ElliottWaveAnalyzer from "@/lib/elliottWaveAnalyzer.js";
 import { realCryptoDataService } from "@/lib/realCryptoAPI";
+import { useAnalysisState } from "@/hooks/use-analysis-state";
 
 export function WaveAnalysisPanel() {
-  const [selectedCrypto, setSelectedCrypto] = useState("BTC/USDT");
-  const [timeFrame, setTimeFrame] = useState("4h");
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const { selectedCrypto, timeFrame, analysisResult, updateAnalysisState } = useAnalysisState();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const cryptoPairs = [
@@ -142,16 +141,18 @@ export function WaveAnalysisPanel() {
       const result = analyzer.analyze(historicalData);
       
       console.log('تم الانتهاء من التحليل الحقيقي بنجاح:', result);
-      setAnalysisResult(result);
+      updateAnalysisState({ analysisResult: result });
       
     } catch (error) {
       console.error("خطأ في التحليل:", error);
       
       // في حالة الفشل، عرض رسالة خطأ مناسبة
-      setAnalysisResult({
-        error: true,
-        message: 'فشل في تحليل البيانات الحقيقية. يرجى المحاولة مرة أخرى.',
-        details: error instanceof Error ? error.message : 'خطأ غير معروف'
+      updateAnalysisState({ 
+        analysisResult: {
+          error: true,
+          message: 'فشل في تحليل البيانات الحقيقية. يرجى المحاولة مرة أخرى.',
+          details: error instanceof Error ? error.message : 'خطأ غير معروف'
+        }
       });
       
     } finally {
@@ -251,7 +252,7 @@ export function WaveAnalysisPanel() {
           <div className="flex space-x-4">
             <div className="flex-1">
               <label className="text-sm font-medium mb-2 block">العملة الرقمية</label>
-              <Select value={selectedCrypto} onValueChange={setSelectedCrypto}>
+              <Select value={selectedCrypto} onValueChange={(value) => updateAnalysisState({ selectedCrypto: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -265,7 +266,7 @@ export function WaveAnalysisPanel() {
             
             <div className="flex-1">
               <label className="text-sm font-medium mb-2 block">الإطار الزمني</label>
-              <Select value={timeFrame} onValueChange={setTimeFrame}>
+              <Select value={timeFrame} onValueChange={(value) => updateAnalysisState({ timeFrame: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

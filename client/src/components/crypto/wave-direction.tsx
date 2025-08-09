@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, TrendingDown, Target, Zap } from "lucide-react";
 // @ts-ignore
 import ElliottWaveAnalyzer from "@/lib/elliottWaveAnalyzer.js";
+import { useAnalysisState } from "@/hooks/use-analysis-state";
 
 interface WaveDirectionProps {
   currentWave?: {
@@ -19,17 +20,51 @@ interface WaveDirectionProps {
   currentPrice?: number;
 }
 
-export function WaveDirection({ currentWave: propCurrentWave, currentPrice: propCurrentPrice }: WaveDirectionProps) {
+interface WaveDirectionProps {
+  currentWave?: {
+    currentWave: string;
+    direction: string;
+    expectedTarget: number;
+    expectedLength: number;
+    completion: number;
+    nextWave: string;
+    confidence: number;
+  } | null;
+  currentPrice?: number;
+  selectedCrypto?: string;
+  timeFrame?: string;
+}
+
+export function WaveDirection({ 
+  currentWave: propCurrentWave, 
+  currentPrice: propCurrentPrice
+}: WaveDirectionProps) {
+  const { selectedCrypto, timeFrame } = useAnalysisState();
   const [waveData, setWaveData] = useState<any>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [currentWave, setCurrentWave] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // جلب البيانات الحقيقية من OKX API
-  const fetchWaveData = async () => {
+  // جلب البيانات الحقيقية من OKX API للعملة المختارة
+  const fetchWaveData = async (crypto: string, tf: string) => {
+    setIsLoading(true);
     try {
+      // تحويل رمز العملة إلى تنسيق OKX
+      const okxSymbol = crypto.replace('/', '-');
+      
+      // تحديد فترة الشموع حسب الإطار الزمني
+      const barMap: { [key: string]: string } = {
+        '1h': '1H',
+        '4h': '4H', 
+        '1d': '1D',
+        '1w': '1W'
+      };
+      
+      const bar = barMap[tf] || '4H';
+
       // جلب البيانات التاريخية من OKX
       const response = await fetch(
-        'https://www.okx.com/api/v5/market/history-candles?instId=BTC-USDT&bar=4H&limit=100',
+        `https://www.okx.com/api/v5/market/history-candles?instId=${okxSymbol}&bar=${bar}&limit=100`,
         {
           headers: {
             'Accept': 'application/json',
@@ -52,7 +87,7 @@ export function WaveDirection({ currentWave: propCurrentWave, currentPrice: prop
         volume: parseFloat(candle[5])
       })).reverse();
 
-      console.log(`تم جلب ${candleData.length} شمعة حقيقية من OKX لـ BTC/USDT`);
+      console.log(`تم جلب ${candleData.length} شمعة حقيقية من OKX لـ ${crypto}`);
 
       // تحليل موجات إليوت
       const analyzer = new ElliottWaveAnalyzer();
@@ -71,18 +106,17 @@ export function WaveDirection({ currentWave: propCurrentWave, currentPrice: prop
       }
     } catch (error) {
       console.error('خطأ في جلب بيانات الموجة:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // جلب البيانات فور التحميل
-    fetchWaveData();
-    
-    // تحديث البيانات كل 3 دقائق
-    const interval = setInterval(fetchWaveData, 3 * 60 * 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    // جلب البيانات عند تغيير العملة أو الإطار الزمني
+    if (selectedCrypto && timeFrame) {
+      fetchWaveData(selectedCrypto, timeFrame);
+    }
+  }, [selectedCrypto, timeFrame]);
 
   // استخدام البيانات المممررة إذا كانت متوفرة، وإلا استخدام البيانات المحلية
   const finalCurrentWave = propCurrentWave || currentWave;
@@ -96,10 +130,13 @@ export function WaveDirection({ currentWave: propCurrentWave, currentPrice: prop
             <Zap className="h-5 w-5 text-blue-500" />
             اتجاه الموجة الحالية
           </CardTitle>
+          <CardDescription className="text-right text-sm text-gray-500 dark:text-gray-400">
+            {selectedCrypto} - {timeFrame}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center text-gray-500 dark:text-gray-400 py-4">
-            جاري تحليل البيانات...
+            {isLoading ? "جاري تحليل البيانات..." : "لا توجد بيانات موجة متاحة"}
           </div>
         </CardContent>
       </Card>
@@ -117,6 +154,9 @@ export function WaveDirection({ currentWave: propCurrentWave, currentPrice: prop
           <Zap className="h-5 w-5 text-blue-500" />
           اتجاه الموجة الحالية
         </CardTitle>
+        <CardDescription className="text-right text-sm text-gray-500 dark:text-gray-400">
+          {selectedCrypto} - {timeFrame}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* الموجة الحالية */}

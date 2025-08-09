@@ -22,7 +22,7 @@ export default function Dashboard() {
           </div>
           
           <div className="space-y-6">
-            <WaveDirection currentWave={null} currentPrice={0} />
+            <WaveDirection />
             <TradingSignals />
           </div>
         </div>
