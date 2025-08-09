@@ -26,7 +26,7 @@ export function Header() {
                   <span className="text-yellow-500">YASER</span>{" "}
                   <span className="text-sky-500">CRYPTO</span>
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 -mt-1">تحليل متقدم</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 -mt-1">تحليل متقدم يعتمد على نظرية موجات أليوت</span>
               </div>
             </Link>
           </div>
