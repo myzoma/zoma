@@ -26,6 +26,7 @@ This is a comprehensive cryptocurrency market analysis application built with Re
 
 Preferred communication style: Simple, everyday language.
 RTL Layout Requirement: ALL Arabic websites must follow right-to-left (RTL) layout, opposite of English sites. This is a fundamental rule for Arabic web design.
+Site Branding: Site name is "YASER CRYPTO" with "ياسر" in golden color and "كريبتو" in sky blue color.
 
 # System Architecture
 

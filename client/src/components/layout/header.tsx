@@ -22,8 +22,9 @@ export function Header() {
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col items-start text-right">
-                <span className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  العملات الرقمية
+                <span className="text-xl font-bold">
+                  <span className="text-yellow-500">ياسر</span>{" "}
+                  <span className="text-sky-500">كريبتو</span>
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400 -mt-1">تحليل متقدم</span>
               </div>

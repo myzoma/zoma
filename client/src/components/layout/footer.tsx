@@ -24,7 +24,10 @@ export function Footer() {
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">محلل العملات الرقمية</span>
+              <span className="text-xl font-bold">
+                <span className="text-yellow-500">ياسر</span>{" "}
+                <span className="text-sky-500">كريبتو</span>
+              </span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
               منصة تحليل العملات الرقمية المتقدمة باستخدام نظرية موجات إليوت والبيانات الحقيقية من أسواق التداول العالمية.
