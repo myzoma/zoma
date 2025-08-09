@@ -9,6 +9,9 @@ import Dashboard from "@/pages/dashboard";
 import Deployments from "@/pages/deployments";
 import Settings from "@/pages/settings";
 import Documentation from "@/pages/docs";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
+import About from "@/pages/about";
 
 function Router() {
   return (
@@ -18,6 +21,9 @@ function Router() {
       <Route path="/deployments" component={Deployments} />
       <Route path="/settings" component={Settings} />
       <Route path="/docs" component={Documentation} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>
   );

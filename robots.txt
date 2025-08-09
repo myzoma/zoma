@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://yasercrypto.replit.app/sitemap.xml
+
+# Google AdSense Bot
+User-agent: Mediapartners-Google
+Allow: /
+
+# Allow specific paths
+Allow: /about
+Allow: /privacy-policy
+Allow: /terms-of-service
+
+# Block admin or sensitive areas (if any)
+# Disallow: /admin/
+# Disallow: /_private/
+
+# Crawl delay
+Crawl-delay: 1
