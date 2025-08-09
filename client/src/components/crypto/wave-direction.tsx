@@ -126,9 +126,9 @@ export function WaveDirection({
     return (
       <Card className="shadow-container card-enhanced">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-right flex items-center justify-end gap-2">
-            <Zap className="h-5 w-5 text-blue-500" />
+          <CardTitle className="text-lg font-semibold text-right flex items-center justify-start gap-2">
             اتجاه الموجة الحالية
+            <Zap className="h-5 w-5 text-blue-500" />
           </CardTitle>
           <CardDescription className="text-right text-sm text-gray-500 dark:text-gray-400">
             {selectedCrypto} - {timeFrame}
@@ -150,9 +150,9 @@ export function WaveDirection({
   return (
     <Card className="shadow-container card-enhanced">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold text-right flex items-center justify-end gap-2">
-          <Zap className="h-5 w-5 text-blue-500" />
+        <CardTitle className="text-lg font-semibold text-right flex items-center justify-start gap-2">
           اتجاه الموجة الحالية
+          <Zap className="h-5 w-5 text-blue-500" />
         </CardTitle>
         <CardDescription className="text-right text-sm text-gray-500 dark:text-gray-400">
           {selectedCrypto} - {timeFrame}
