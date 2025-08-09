@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, FileArchive, Github, Code } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import JSZip from 'jszip';
 
 export function ProjectDownload() {
   const { toast } = useToast();
