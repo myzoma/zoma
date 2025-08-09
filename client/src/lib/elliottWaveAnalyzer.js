@@ -464,6 +464,107 @@ class ElliottWaveAnalyzer {
     }
 
     // التحليل الرئيسي
+    // تحديد الموجة الحالية والطول المتوقع
+    getCurrentWaveDirection(patterns, currentPrice) {
+        if (!patterns || patterns.length === 0) {
+            return null;
+        }
+
+        const latestPattern = patterns[patterns.length - 1];
+        
+        if (latestPattern.type === 'corrective') {
+            const { waves, direction } = latestPattern;
+            const waveA = waves.wA;
+            const waveB = waves.wB;
+            const waveC = waves.wC;
+            
+            // تحديد أين نحن في النمط التصحيحي ABC
+            if (currentPrice > Math.min(waveA.end.price, waveB.end.price) && 
+                currentPrice < Math.max(waveA.end.price, waveB.end.price)) {
+                // نحن في منتصف الموجة B
+                return {
+                    currentWave: 'B',
+                    direction: direction === 'bullish' ? 'صاعد' : 'هابط',
+                    expectedTarget: waveB.end.price,
+                    expectedLength: Math.abs(waveB.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waveB.start.price, waveB.end.price, currentPrice),
+                    nextWave: 'C',
+                    confidence: latestPattern.confidence
+                };
+            } else if (Math.abs(currentPrice - waveC.start.price) < Math.abs(currentPrice - waveA.start.price)) {
+                // نحن في الموجة C أو قريبون منها
+                return {
+                    currentWave: 'C',
+                    direction: direction === 'bullish' ? 'صاعد' : 'هابط',
+                    expectedTarget: waveC.end.price,
+                    expectedLength: Math.abs(waveC.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waveC.start.price, waveC.end.price, currentPrice),
+                    nextWave: 'انتهاء النمط التصحيحي',
+                    confidence: latestPattern.confidence
+                };
+            } else {
+                // نحن في الموجة A
+                return {
+                    currentWave: 'A',
+                    direction: direction === 'bullish' ? 'هابط' : 'صاعد', // عكس الاتجاه العام للتصحيح
+                    expectedTarget: waveA.end.price,
+                    expectedLength: Math.abs(waveA.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waveA.start.price, waveA.end.price, currentPrice),
+                    nextWave: 'B',
+                    confidence: latestPattern.confidence
+                };
+            }
+        } else if (latestPattern.type === 'motive') {
+            const { waves, direction } = latestPattern;
+            
+            // تحديد أين نحن في الموجات الدافعة 1-2-3-4-5
+            const currentDistanceToW5 = Math.abs(currentPrice - waves.w5.end.price);
+            const currentDistanceToW4 = Math.abs(currentPrice - waves.w4.end.price);
+            const currentDistanceToW3 = Math.abs(currentPrice - waves.w3.end.price);
+            
+            if (currentDistanceToW5 < currentDistanceToW4) {
+                return {
+                    currentWave: '5',
+                    direction: direction === 'bullish' ? 'صاعد' : 'هابط',
+                    expectedTarget: waves.w5.end.price,
+                    expectedLength: Math.abs(waves.w5.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waves.w5.start.price, waves.w5.end.price, currentPrice),
+                    nextWave: 'تصحيح ABC',
+                    confidence: latestPattern.confidence
+                };
+            } else if (currentDistanceToW4 < currentDistanceToW3) {
+                return {
+                    currentWave: '4',
+                    direction: direction === 'bullish' ? 'هابط' : 'صاعد', // موجة تصحيحية
+                    expectedTarget: waves.w4.end.price,
+                    expectedLength: Math.abs(waves.w4.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waves.w4.start.price, waves.w4.end.price, currentPrice),
+                    nextWave: '5',
+                    confidence: latestPattern.confidence
+                };
+            } else {
+                return {
+                    currentWave: '3',
+                    direction: direction === 'bullish' ? 'صاعد' : 'هابط',
+                    expectedTarget: waves.w3.end.price,
+                    expectedLength: Math.abs(waves.w3.end.price - currentPrice),
+                    completion: this.calculateWaveCompletion(waves.w3.start.price, waves.w3.end.price, currentPrice),
+                    nextWave: '4',
+                    confidence: latestPattern.confidence
+                };
+            }
+        }
+        
+        return null;
+    }
+
+    // حساب نسبة اكتمال الموجة
+    calculateWaveCompletion(startPrice, endPrice, currentPrice) {
+        const totalDistance = Math.abs(endPrice - startPrice);
+        const currentDistance = Math.abs(currentPrice - startPrice);
+        return Math.min(100, (currentDistance / totalDistance) * 100);
+    }
+
     analyze(data) {
         try {
             // العثور على النقاط المحورية
@@ -475,12 +576,18 @@ class ElliottWaveAnalyzer {
             // تحليل الأنماط
             const patterns = this.analyzeWavePatterns(zigzag);
             
+            // تحديد الموجة الحالية
+            const currentPrice = data[data.length - 1].close;
+            const currentWave = this.getCurrentWaveDirection(patterns, currentPrice);
+            
             // إرجاع النتائج
             return {
                 success: true,
                 pivots: pivots,
                 zigzag: zigzag,
                 patterns: patterns,
+                currentWave: currentWave,
+                currentPrice: currentPrice,
                 summary: {
                     totalPatterns: patterns.length,
                     motivePatterns: patterns.filter(p => p.type === 'motive').length,
@@ -494,6 +601,7 @@ class ElliottWaveAnalyzer {
                 success: false,
                 error: error.message,
                 patterns: [],
+                currentWave: null,
                 summary: null
             };
         }

@@ -21,6 +21,7 @@ This is a comprehensive cryptocurrency market analysis application built with Re
 ✓ **Magical UI Effects**: Enhanced visual experience with gradient colors and glowing animations
 ✓ **RTL Layout Implementation**: Complete right-to-left layout implementation following Arabic web design standards
 ✓ **Arabic Layout Rule**: Applied fundamental rule that ALL Arabic websites must follow RTL layout, opposite of English sites
+✓ **Wave Direction Feature**: Added current Elliott Wave direction indicator showing which wave (A, B, C or 1-5) price is heading toward with expected wave length, completion percentage, and next wave prediction
 
 # User Preferences
 

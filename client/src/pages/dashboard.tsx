@@ -4,6 +4,7 @@ import { CryptoOverview } from "@/components/crypto/crypto-overview";
 import { WaveAnalysisPanel } from "@/components/crypto/wave-analysis-panel";
 import { MarketData } from "@/components/crypto/market-data";
 import { TradingSignals } from "@/components/crypto/trading-signals";
+import { WaveDirection } from "@/components/crypto/wave-direction";
 
 
 export default function Dashboard() {
@@ -21,6 +22,7 @@ export default function Dashboard() {
           </div>
           
           <div className="space-y-6">
+            <WaveDirection currentWave={null} currentPrice={0} />
             <TradingSignals />
           </div>
         </div>
