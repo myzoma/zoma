@@ -4,23 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TrendingUp, TrendingDown, AlertTriangle, Target, Clock, Signal, RefreshCw } from "lucide-react";
 import { realCryptoDataService } from "@/lib/realCryptoAPI";
+import { useAnalysisState } from "@/hooks/use-analysis-state";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 // @ts-ignore
 import ElliottWaveAnalyzer from "@/lib/elliottWaveAnalyzer.js";
 
 export function TradingSignals() {
+  const { selectedCrypto } = useAnalysisState();
   const [signals, setSignals] = useState<any[]>([]);
-
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // جلب البيانات التاريخية من OKX
-  const fetchHistoricalData = async (symbol: string, timeframe: string = '4h') => {
+  // جلب البيانات التاريخية من OKX - دائماً على الإطار اليومي للإشارات
+  const fetchHistoricalData = async (symbol: string) => {
     try {
       const okxSymbol = symbol.replace('/', '-');
       const response = await fetch(
-        `https://www.okx.com/api/v5/market/history-candles?instId=${okxSymbol}&bar=4H&limit=100`,
+        `https://www.okx.com/api/v5/market/history-candles?instId=${okxSymbol}&bar=1D&limit=100`,
         {
           headers: { 'Accept': 'application/json' }
         }
@@ -51,7 +52,8 @@ export function TradingSignals() {
     try {
       console.log('توليد إشارات التداول من البيانات والتحليل الحقيقي...');
       
-      const cryptoPairs = ["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"];
+      // استخدام العملة المختارة فقط للإشارات على الإطار اليومي
+      const cryptoPairs = [selectedCrypto || "BTC/USDT"];
       const realSignals = [];
       const analyzer = new ElliottWaveAnalyzer();
       
@@ -59,7 +61,7 @@ export function TradingSignals() {
         const pair = cryptoPairs[i];
         
         try {
-          // جلب البيانات الحالية والتاريخية
+          // جلب البيانات الحالية والتاريخية على الإطار اليومي
           const [currentData, historicalData] = await Promise.all([
             realCryptoDataService.getPrices([pair]),
             fetchHistoricalData(pair)
@@ -136,7 +138,7 @@ export function TradingSignals() {
               entryPrice: entryPrice,
               targetPrice: targetPrice,
               stopLoss: stopLoss,
-              timeFrame: "4h",
+              timeFrame: "يوم واحد",
               timestamp: "الآن",
               status: "",
               realAnalysis: true // علامة للدلالة على أنها من التحليل الحقيقي
@@ -156,7 +158,7 @@ export function TradingSignals() {
               entryPrice: crypto.price,
               targetPrice: crypto.price * (signalType === 'buy' ? 1.03 : 0.97),
               stopLoss: crypto.price * (signalType === 'buy' ? 0.98 : 1.02),
-              timeFrame: "4h",
+              timeFrame: "يوم واحد",
               timestamp: "الآن",
               status: "",
               realAnalysis: false
@@ -194,6 +196,9 @@ export function TradingSignals() {
 
   useEffect(() => {
     generateRealSignals();
+  }, [selectedCrypto]);
+
+  useEffect(() => {
     const interval = setInterval(generateRealSignals, 180000); // كل 3 دقائق
     return () => clearInterval(interval);
   }, []);
@@ -329,7 +334,7 @@ export function TradingSignals() {
             </span>
           </CardTitle>
           <CardDescription>
-            إشارات مبنية على البيانات الحقيقية وتحليل موجات إليوت
+            إشارات على الإطار اليومي من تحليل موجات إليوت للعملة {selectedCrypto || "BTC/USDT"}
           </CardDescription>
         </CardHeader>
         <CardContent>
