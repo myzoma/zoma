@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vi2-Clean - Redirecting to App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+        .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1>Vi2-Clean</h1>
+        <p>Modern React TypeScript application with deployment dashboard for GitHub Pages.</p>
+        
+        <div id="redirect-message" style="display: none;">
+            <div class="spinner"></div>
+            <p>Redirecting to application...</p>
+        </div>
+        
+        <div id="manual-link">
+            <a href="./dist/public/index.html" class="button" onclick="showRedirect()">
+                Launch Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showRedirect() {
+            document.getElementById('manual-link').style.display = 'none';
+            document.getElementById('redirect-message').style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = './dist/public/index.html';
+            }, 1500);
+        }
+
+        // Auto-redirect after 3 seconds if the built app exists
+        setTimeout(() => {
+            fetch('./dist/public/index.html')
+                .then(response => {
+                    if (response.ok) {
+                        showRedirect();
+                    }
+                })
+                .catch(() => {
+                    // Built app doesn't exist yet
+                });
+        }, 3000);
+    </script>
+</body>
+</html>

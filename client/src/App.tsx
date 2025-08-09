@@ -6,15 +6,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
+import Deployments from "@/pages/deployments";
+import Settings from "@/pages/settings";
+import Documentation from "@/pages/docs";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/dashboard" component={Dashboard} />
-      <Route path="/deployments" component={() => <div>Deployments page coming soon...</div>} />
-      <Route path="/settings" component={() => <div>Settings page coming soon...</div>} />
-      <Route path="/docs" component={() => <div>Documentation page coming soon...</div>} />
+      <Route path="/deployments" component={Deployments} />
+      <Route path="/settings" component={Settings} />
+      <Route path="/docs" component={Documentation} />
       <Route component={NotFound} />
     </Switch>
   );
