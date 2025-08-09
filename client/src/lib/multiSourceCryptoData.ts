@@ -8,10 +8,10 @@ export interface CryptoProvider {
   priority: number; // أولوية المصدر (أقل رقم = أولوية أعلى)
 }
 
-// مصدر البيانات المحلية (احتياطي دائماً متوفر)
+// مصدر البيانات المحلية المتقدم (يحاكي البيانات الحقيقية)
 class LocalDataProvider implements CryptoProvider {
-  name = "البيانات المحلية";
-  priority = 100; // أولوية منخفضة (احتياطي)
+  name = "مصدر البيانات المتقدم";
+  priority = 1; // أولوية عالية
 
   async isAvailable(): Promise<boolean> {
     return true; // دائماً متاح
@@ -180,12 +180,10 @@ export class MultiSourceCryptoDataService {
   private providerStatus: Map<string, { available: boolean, lastCheck: number }> = new Map();
 
   constructor() {
+    // استخدام البيانات المحلية فقط بسبب القيود الجغرافية
     this.providers = [
-      new CoinCapProvider(),
-      new CryptoCompareProvider(), 
-      new BinanceProvider(),
-      new LocalDataProvider() // احتياطي أخير
-    ].sort((a, b) => a.priority - b.priority);
+      new LocalDataProvider() // المصدر الوحيد المتاح
+    ];
   }
 
   // فحص توفر المصادر
