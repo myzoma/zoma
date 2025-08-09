@@ -90,7 +90,8 @@ export function MarketData() {
   };
 
   const renderCryptoRow = (crypto: CryptoPriceData) => {
-    const isPositive = crypto.changePercent24h > 0;
+    const changePercent = isNaN(crypto.changePercent24h) ? 0 : crypto.changePercent24h;
+    const isPositive = changePercent > 0;
     const Icon = isPositive ? TrendingUp : TrendingDown;
     const changeColor = isPositive ? "text-green-600" : "text-red-600";
 
@@ -112,7 +113,7 @@ export function MarketData() {
               <Icon className={`h-5 w-5 ${changeColor}`} />
             </div>
             <div className={`text-sm ${changeColor} font-medium`}>
-              {isPositive ? '+' : ''}{crypto.changePercent24h.toFixed(2)}%
+              {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
             </div>
           </div>
         </div>
