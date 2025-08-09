@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -148,4 +148,9 @@
   .card-enhanced {
     @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
   }
+}
+
+/* خط عربي واضح */
+* {
+  font-family: 'Tajawal', 'Inter', system-ui, sans-serif !important;
 }
