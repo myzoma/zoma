@@ -3,13 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* إعداد التخطيط العربي الشامل من اليمين إلى اليسار */
-html {
-  direction: rtl;
-}
-
+/* إعداد التخطيط العربي للنصوص فقط */
 body {
-  direction: rtl;
   text-align: right;
 }
 
