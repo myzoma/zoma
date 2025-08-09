@@ -138,7 +138,7 @@ export function TradingSignals() {
               stopLoss: stopLoss,
               timeFrame: "4h",
               timestamp: "الآن",
-              status: "نشط",
+              status: "",
               realAnalysis: true // علامة للدلالة على أنها من التحليل الحقيقي
             });
             
@@ -158,7 +158,7 @@ export function TradingSignals() {
               stopLoss: crypto.price * (signalType === 'buy' ? 0.98 : 1.02),
               timeFrame: "4h",
               timestamp: "الآن",
-              status: "نشط",
+              status: "",
               realAnalysis: false
             });
           }
@@ -233,12 +233,7 @@ export function TradingSignals() {
               {signal.timeFrame}
             </Badge>
           </div>
-          <Badge 
-            variant={signal.status === 'نشط' ? 'default' : 'secondary'}
-            className="text-xs"
-          >
-            {signal.status}
-          </Badge>
+
         </div>
 
         <div className="space-y-2 mb-3">
