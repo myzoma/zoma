@@ -201,7 +201,7 @@ export function TradingSignals() {
     const Icon = isBuy ? TrendingUp : TrendingDown;
 
     return (
-      <div key={signal.id} className="p-4 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-soft">
+      <div key={signal.id} className="p-4 rounded-xl border bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Icon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -251,7 +251,17 @@ export function TradingSignals() {
             <Clock className="h-3 w-3 mr-1" />
             {signal.timestamp}
           </div>
-          <Button variant="outline" size="sm" className="text-xs">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs hover:bg-blue-50 dark:hover:bg-blue-900 transition-all duration-300 hover:scale-105"
+            onClick={() => {
+              toast({
+                title: "تفاصيل الإشارة",
+                description: `${signal.pair} - نمط: ${signal.pattern} - ثقة: ${signal.confidence}%`
+              });
+            }}
+          >
             التفاصيل
           </Button>
         </div>
@@ -292,11 +302,13 @@ export function TradingSignals() {
   return (
     <div className="space-y-6">
       {/* إشارات التداول */}
-      <Card className="shadow-container card-enhanced">
+      <Card className="shadow-container magical-card backdrop-blur-lg border-0 shadow-2xl">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Signal className="h-5 w-5 mr-2" />
-            إشارات التداول الحقيقية
+            <Signal className="h-5 w-5 mr-2 text-blue-600" />
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              إشارات التداول الحقيقية
+            </span>
           </CardTitle>
           <CardDescription>
             إشارات مبنية على البيانات الحقيقية وتحليل موجات إليوت
@@ -310,7 +322,7 @@ export function TradingSignals() {
       </Card>
 
       {/* التنبيهات */}
-      <Card className="shadow-container card-enhanced">
+      <Card className="shadow-container magical-card backdrop-blur-lg border-0 shadow-2xl">
         <CardHeader>
           <CardTitle className="flex items-center">
             <AlertTriangle className="h-5 w-5 mr-2" />
@@ -328,7 +340,7 @@ export function TradingSignals() {
       </Card>
 
       {/* الإحصائيات */}
-      <Card className="shadow-container card-enhanced">
+      <Card className="shadow-container magical-card backdrop-blur-lg border-0 shadow-2xl">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Target className="h-5 w-5 mr-2" />
