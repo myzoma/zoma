@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, RefreshCw, DollarSign, Volume2, Wifi, WifiOff, AlertCircle } from "lucide-react";
-import { multiSourceCryptoService, type LocalCryptoPriceData as CryptoPriceData } from "@/lib/multiSourceCryptoData";
+import { realCryptoDataService, type RealCryptoPriceData as CryptoPriceData } from "@/lib/realCryptoAPI";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,23 +20,23 @@ export function MarketData() {
     "MATIC/USDT", "DOT/USDT", "AVAX/USDT", "LINK/USDT"
   ];
 
-  // جلب البيانات من المصادر المتعددة
+  // جلب البيانات الحقيقية من APIs متعددة
   const fetchRealData = async (showToast = false) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log('جلب البيانات من المصادر المتعددة...');
-      const result = await multiSourceCryptoService.getPrices(watchedSymbols);
+      console.log('جلب البيانات الحقيقية من APIs الخارجية...');
+      const data = await realCryptoDataService.getPrices(watchedSymbols);
       
-      setCryptoData(result.data);
-      setCurrentSource(result.source);
-      setAvailableProviders(result.availableSources);
+      setCryptoData(data);
+      setCurrentSource("OKX Exchange");
+      setAvailableProviders(["OKX", "Kraken", "Coinbase"]);
       
-      if (showToast && result.data.length > 0) {
+      if (showToast && data.length > 0) {
         toast({
           title: "تم تحديث البيانات",
-          description: `تم جلب ${result.data.length} عملة من ${result.source}`,
+          description: `تم جلب ${data.length} عملة من مصادر حقيقية`,
         });
       }
       

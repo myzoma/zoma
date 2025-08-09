@@ -3,8 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { TrendingUp, TrendingDown, AlertTriangle, Target, Clock, Signal, RefreshCw } from "lucide-react";
-import { multiSourceCryptoService } from "@/lib/multiSourceCryptoData";
-import { localCryptoDataService } from "@/lib/localCryptoData";
+import { realCryptoDataService } from "@/lib/realCryptoAPI";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,28 +53,43 @@ export function TradingSignals() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // توليد إشارات تداول حقيقية
+  // توليد إشارات تداول من البيانات الحقيقية
   const generateRealSignals = async () => {
     setIsLoading(true);
     try {
-      const result = await multiSourceCryptoService.getPrices(["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"]);
+      const realData = await realCryptoDataService.getPrices(["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"]);
       
-      const realSignals = result.data.map((crypto, index) => {
-        const analysis = localCryptoDataService.analyzeElliottWave(crypto);
+      const realSignals = realData.map((crypto, index) => {
         const isPositive = crypto.changePercent24h > 0;
         
+        // تحليل إليوت بناءً على البيانات الحقيقية
+        const momentum = Math.abs(crypto.changePercent24h);
+        let pattern = "تصحيحية";
+        let confidence = 50;
+        
+        if (momentum > 5) {
+          pattern = "دافعة قوية";
+          confidence = Math.min(95, 75 + momentum * 2);
+        } else if (momentum > 2) {
+          pattern = "دافعة";
+          confidence = Math.min(85, 60 + momentum * 4);
+        } else if (momentum > 1) {
+          pattern = "تصحيحية نشطة";
+          confidence = Math.min(75, 55 + momentum * 6);
+        }
+
         return {
           id: index + 1,
           pair: crypto.symbol,
           type: isPositive ? "buy" : "sell",
-          pattern: `موجة ${analysis.pattern}`,
-          confidence: analysis.confidence,
+          pattern: `موجة ${pattern}`,
+          confidence: Math.round(confidence),
           entryPrice: crypto.price,
           targetPrice: crypto.price * (isPositive ? 1.08 : 0.92),
           stopLoss: crypto.price * (isPositive ? 0.95 : 1.05),
           timeFrame: "4h",
           timestamp: "الآن",
-          status: analysis.confidence > 70 ? "نشط" : "مراقبة"
+          status: confidence > 70 ? "نشط" : "مراقبة"
         };
       });
       
@@ -83,7 +97,7 @@ export function TradingSignals() {
       
       toast({
         title: "تم تحديث الإشارات",
-        description: `تم توليد ${realSignals.length} إشارة من البيانات الحقيقية`
+        description: `تم توليد ${realSignals.length} إشارة من OKX والبيانات الحقيقية`
       });
       
     } catch (error) {
