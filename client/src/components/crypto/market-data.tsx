@@ -31,7 +31,7 @@ export function MarketData() {
       
       setCryptoData(data);
       setCurrentSource("OKX Exchange");
-      setAvailableProviders(["OKX", "Kraken", "Coinbase"]);
+      setAvailableProviders(["OKX", "Binance", "Kraken", "Coinbase"]);
       
       if (showToast && data.length > 0) {
         toast({

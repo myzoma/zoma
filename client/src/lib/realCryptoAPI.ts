@@ -32,7 +32,15 @@ class FreeRealDataProvider {
       console.log('OKX failed:', error);
     }
 
-    // طريقة 2: استخدام Kraken API العام
+    // طريقة 2: استخدام Binance API الجديد
+    try {
+      const binanceData = await this.fetchFromBinance(symbols);
+      if (binanceData.length > 0) return binanceData;
+    } catch (error) {
+      console.log('Binance failed:', error);
+    }
+
+    // طريقة 3: استخدام Kraken API العام
     try {
       const krakenData = await this.fetchFromKraken(symbols);
       if (krakenData.length > 0) return krakenData;
@@ -40,7 +48,7 @@ class FreeRealDataProvider {
       console.log('Kraken failed:', error);
     }
 
-    // طريقة 3: استخدام Coinbase API العام
+    // طريقة 4: استخدام Coinbase API العام
     try {
       const coinbaseData = await this.fetchFromCoinbase(symbols);
       if (coinbaseData.length > 0) return coinbaseData;
@@ -113,6 +121,71 @@ class FreeRealDataProvider {
 
     } catch (error) {
       console.error('خطأ في OKX API:', error);
+      throw error;
+    }
+  }
+
+  // Binance API الجديد (غير محظور)
+  private async fetchFromBinance(symbols: string[]): Promise<RealCryptoPriceData[]> {
+    const results: RealCryptoPriceData[] = [];
+    
+    // تحويل رموز العملات إلى تنسيق Binance
+    const binanceSymbols = symbols.map(s => {
+      const [base, quote] = s.split('/');
+      return `${base}${quote}`;
+    });
+
+    try {
+      // جلب بيانات جميع العملات مرة واحدة
+      const response = await fetch(
+        'https://api1.binance.com/api/v3/ticker/24hr',
+        {
+          headers: {
+            'Accept': 'application/json',
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Binance API Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid Binance response format');
+      }
+
+      // فلترة البيانات للعملات المطلوبة
+      for (let i = 0; i < symbols.length; i++) {
+        const symbol = symbols[i];
+        const binanceSymbol = binanceSymbols[i];
+        
+        const ticker = data.find((t: any) => t.symbol === binanceSymbol);
+        
+        if (ticker) {
+          const currentPrice = parseFloat(ticker.lastPrice);
+          const changePercent24h = parseFloat(ticker.priceChangePercent);
+          const change24h = parseFloat(ticker.priceChange);
+
+          results.push({
+            symbol,
+            price: currentPrice,
+            change24h,
+            changePercent24h,
+            high24h: parseFloat(ticker.highPrice),
+            low24h: parseFloat(ticker.lowPrice),
+            volume24h: parseFloat(ticker.volume),
+            lastUpdate: new Date().toISOString()
+          });
+        }
+      }
+
+      console.log(`تم جلب ${results.length} عملة من Binance بنجاح`);
+      return results;
+
+    } catch (error) {
+      console.error('خطأ في Binance API:', error);
       throw error;
     }
   }

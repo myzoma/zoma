@@ -240,26 +240,13 @@ export function TradingSignals() {
       {/* إشارات التداول */}
       <Card className="shadow-container card-enhanced">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center">
-                <Signal className="h-5 w-5 mr-2" />
-                إشارات التداول الحقيقية
-              </CardTitle>
-              <CardDescription>
-                إشارات مبنية على البيانات الحقيقية وتحليل موجات إليوت
-              </CardDescription>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={generateRealSignals}
-              disabled={isLoading}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              تحديث
-            </Button>
-          </div>
+          <CardTitle className="flex items-center">
+            <Signal className="h-5 w-5 mr-2" />
+            إشارات التداول الحقيقية
+          </CardTitle>
+          <CardDescription>
+            إشارات مبنية على البيانات الحقيقية وتحليل موجات إليوت
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
