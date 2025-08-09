@@ -126,7 +126,7 @@ export function WaveDirection({
     return (
       <Card className="shadow-container card-enhanced">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-right flex items-center justify-end gap-2">
+          <CardTitle className="text-lg font-semibold text-left flex items-center justify-start gap-2">
             <Zap className="h-5 w-5 text-blue-500" />
             اتجاه الموجة الحالية
           </CardTitle>
@@ -150,7 +150,7 @@ export function WaveDirection({
   return (
     <Card className="shadow-container card-enhanced">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold text-right flex items-center justify-end gap-2">
+        <CardTitle className="text-lg font-semibold text-left flex items-center justify-start gap-2">
           <Zap className="h-5 w-5 text-blue-500" />
           اتجاه الموجة الحالية
         </CardTitle>
