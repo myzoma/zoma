@@ -5,6 +5,7 @@ import { WaveAnalysisPanel } from "@/components/crypto/wave-analysis-panel";
 import { MarketData } from "@/components/crypto/market-data";
 import { TradingSignals } from "@/components/crypto/trading-signals";
 import { WaveDirection } from "@/components/crypto/wave-direction";
+import { FearGreedIndex } from "@/components/crypto/fear-greed-index";
 import { CryptoDropdown } from "@/components/crypto/crypto-dropdown";
 import { useAnalysisState } from "@/hooks/use-analysis-state";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             <WaveDirection />
             <TradingSignals />
+            <FearGreedIndex />
           </div>
         </div>
       </main>
