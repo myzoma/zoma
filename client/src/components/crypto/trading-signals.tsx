@@ -6,99 +6,156 @@ import { TrendingUp, TrendingDown, AlertTriangle, Target, Clock, Signal, Refresh
 import { realCryptoDataService } from "@/lib/realCryptoAPI";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+// @ts-ignore
+import ElliottWaveAnalyzer from "@/lib/elliottWaveAnalyzer.js";
 
 export function TradingSignals() {
-  const [signals, setSignals] = useState([
-    {
-      id: 1,
-      pair: "BTC/USDT",
-      type: "buy",
-      pattern: "دافعة - الموجة 3",
-      confidence: 89,
-      entryPrice: 43200,
-      targetPrice: 47800,
-      stopLoss: 41500,
-      timeFrame: "4h",
-      timestamp: "منذ 30 دقيقة",
-      status: "نشط"
-    },
-    {
-      id: 2,
-      pair: "ETH/USDT", 
-      type: "sell",
-      pattern: "تصحيحية - الموجة C",
-      confidence: 76,
-      entryPrice: 2650,
-      targetPrice: 2420,
-      stopLoss: 2720,
-      timeFrame: "1d",
-      timestamp: "منذ ساعتين",
-      status: "نشط"
-    },
-    {
-      id: 3,
-      pair: "ADA/USDT",
-      type: "buy", 
-      pattern: "دافعة - الموجة 5",
-      confidence: 82,
-      entryPrice: 0.475,
-      targetPrice: 0.520,
-      stopLoss: 0.455,
-      timeFrame: "4h",
-      timestamp: "منذ 5 ساعات",
-      status: "مكتملة"
-    }
-  ]);
+  const [signals, setSignals] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // توليد إشارات تداول من البيانات الحقيقية
+  // جلب البيانات التاريخية من OKX
+  const fetchHistoricalData = async (symbol: string, timeframe: string = '4h') => {
+    try {
+      const okxSymbol = symbol.replace('/', '-');
+      const response = await fetch(
+        `https://www.okx.com/api/v5/market/history-candles?instId=${okxSymbol}&bar=4H&limit=100`,
+        {
+          headers: { 'Accept': 'application/json' }
+        }
+      );
+
+      if (!response.ok) throw new Error(`OKX API Error: ${response.status}`);
+      
+      const result = await response.json();
+      if (result.code !== '0' || !result.data) throw new Error('Invalid OKX response');
+
+      return result.data.map((candle: any) => ({
+        time: parseInt(candle[0]),
+        open: parseFloat(candle[1]),
+        high: parseFloat(candle[2]),
+        low: parseFloat(candle[3]),
+        close: parseFloat(candle[4]),
+        volume: parseFloat(candle[5])
+      })).reverse();
+    } catch (error) {
+      console.error(`فشل جلب البيانات التاريخية لـ ${symbol}:`, error);
+      return null;
+    }
+  };
+
+  // توليد إشارات تداول من تحليل موجات إليوت الحقيقي
   const generateRealSignals = async () => {
     setIsLoading(true);
     try {
-      const realData = await realCryptoDataService.getPrices(["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"]);
+      console.log('توليد إشارات التداول من البيانات والتحليل الحقيقي...');
       
-      const realSignals = realData.map((crypto, index) => {
-        const isPositive = crypto.changePercent24h > 0;
+      const cryptoPairs = ["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"];
+      const realSignals = [];
+      const analyzer = new ElliottWaveAnalyzer();
+      
+      for (let i = 0; i < cryptoPairs.length; i++) {
+        const pair = cryptoPairs[i];
         
-        // تحليل إليوت بناءً على البيانات الحقيقية
-        const momentum = Math.abs(crypto.changePercent24h);
-        let pattern = "تصحيحية";
-        let confidence = 50;
-        
-        if (momentum > 5) {
-          pattern = "دافعة قوية";
-          confidence = Math.min(95, 75 + momentum * 2);
-        } else if (momentum > 2) {
-          pattern = "دافعة";
-          confidence = Math.min(85, 60 + momentum * 4);
-        } else if (momentum > 1) {
-          pattern = "تصحيحية نشطة";
-          confidence = Math.min(75, 55 + momentum * 6);
+        try {
+          // جلب البيانات الحالية والتاريخية
+          const [currentData, historicalData] = await Promise.all([
+            realCryptoDataService.getPrices([pair]),
+            fetchHistoricalData(pair)
+          ]);
+          
+          if (!currentData.length || !historicalData) {
+            console.log(`تخطي ${pair} - بيانات غير مكتملة`);
+            continue;
+          }
+          
+          const crypto = currentData[0];
+          
+          // تشغيل تحليل موجات إليوت الحقيقي
+          const analysis = analyzer.analyze(historicalData);
+          
+          if (analysis.success && analysis.patterns && analysis.patterns.length > 0) {
+            // استخدام أفضل نمط للإشارة
+            const bestPattern = analysis.patterns.sort((a, b) => b.confidence - a.confidence)[0];
+            
+            // تحديد نوع الإشارة بناءً على النمط والاتجاه
+            const signalType = bestPattern.direction === 'bullish' ? 'buy' : 'sell';
+            const isMotivePattern = bestPattern.type === 'motive';
+            
+            // حساب نقاط الدخول والأهداف من التحليل الحقيقي
+            const entryPrice = crypto.price;
+            let targetPrice, stopLoss;
+            
+            if (bestPattern.targets) {
+              if (isMotivePattern) {
+                targetPrice = bestPattern.targets.wave5_fib618 || 
+                             bestPattern.targets.wave5_fib1000 ||
+                             crypto.price * (signalType === 'buy' ? 1.05 : 0.95);
+              } else {
+                targetPrice = bestPattern.targets.waveC_fib618 ||
+                             bestPattern.targets.finalTarget ||
+                             crypto.price * (signalType === 'buy' ? 1.03 : 0.97);
+              }
+            } else {
+              // احتياطي إذا لم تكن الأهداف متاحة
+              targetPrice = crypto.price * (signalType === 'buy' ? 1.04 : 0.96);
+            }
+            
+            stopLoss = crypto.price * (signalType === 'buy' ? 0.97 : 1.03);
+            
+            realSignals.push({
+              id: Date.now() + i,
+              pair: pair,
+              type: signalType,
+              pattern: `${isMotivePattern ? 'دافعة' : 'تصحيحية'} - ${bestPattern.direction === 'bullish' ? 'صاعد' : 'هابط'}`,
+              confidence: Math.round(bestPattern.confidence),
+              entryPrice: entryPrice,
+              targetPrice: targetPrice,
+              stopLoss: stopLoss,
+              timeFrame: "4h",
+              timestamp: "الآن",
+              status: "نشط",
+              realAnalysis: true // علامة للدلالة على أنها من التحليل الحقيقي
+            });
+            
+          } else {
+            // إذا فشل التحليل، استخدم بيانات السوق الحالية لإنشاء إشارة بسيطة
+            const momentum = Math.abs(crypto.changePercent24h);
+            const signalType = crypto.changePercent24h > 0 ? 'buy' : 'sell';
+            
+            realSignals.push({
+              id: Date.now() + i,
+              pair: pair,
+              type: signalType,
+              pattern: `اتجاه السوق - ${crypto.changePercent24h > 0 ? 'صاعد' : 'هابط'}`,
+              confidence: Math.min(75, 50 + momentum * 3),
+              entryPrice: crypto.price,
+              targetPrice: crypto.price * (signalType === 'buy' ? 1.03 : 0.97),
+              stopLoss: crypto.price * (signalType === 'buy' ? 0.98 : 1.02),
+              timeFrame: "4h",
+              timestamp: "الآن",
+              status: "نشط",
+              realAnalysis: false
+            });
+          }
+          
+        } catch (pairError) {
+          console.error(`خطأ في معالجة ${pair}:`, pairError);
         }
-
-        return {
-          id: index + 1,
-          pair: crypto.symbol,
-          type: isPositive ? "buy" : "sell",
-          pattern: `موجة ${pattern}`,
-          confidence: Math.round(confidence),
-          entryPrice: crypto.price,
-          targetPrice: crypto.price * (isPositive ? 1.08 : 0.92),
-          stopLoss: crypto.price * (isPositive ? 0.95 : 1.05),
-          timeFrame: "4h",
-          timestamp: "الآن",
-          status: confidence > 70 ? "نشط" : "مراقبة"
-        };
-      });
+      }
       
-      setSignals(realSignals);
-      
-      toast({
-        title: "تم تحديث الإشارات",
-        description: `تم توليد ${realSignals.length} إشارة من OKX والبيانات الحقيقية`
-      });
+      if (realSignals.length > 0) {
+        setSignals(realSignals);
+        console.log(`تم توليد ${realSignals.length} إشارة من التحليل الحقيقي`);
+        
+        toast({
+          title: "تم تحديث الإشارات",
+          description: `تم توليد ${realSignals.length} إشارة من تحليل موجات إليوت الحقيقي`
+        });
+      } else {
+        console.log('لم يتم توليد إشارات جديدة');
+      }
       
     } catch (error) {
       console.error('خطأ في توليد الإشارات:', error);
