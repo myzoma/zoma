@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export function MarketData() {
   const [cryptoData, setCryptoData] = useState<CryptoPriceData[]>([]);
+  const [topGainers, setTopGainers] = useState<CryptoPriceData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSource, setCurrentSource] = useState<string>("");
@@ -28,6 +29,14 @@ export function MarketData() {
       const data = await realCryptoDataService.getPrices(watchedSymbols);
       
       setCryptoData(data);
+      
+      // ترتيب العملات حسب أعلى نسبة ربح في 24 ساعة
+      const gainers = data
+        .filter(crypto => crypto.changePercent24h > 0) // فقط العملات الرابحة
+        .sort((a, b) => b.changePercent24h - a.changePercent24h) // ترتيب تنازلي
+        .slice(0, 10); // أفضل 10 رابحين
+      
+      setTopGainers(gainers);
       setCurrentSource("OKX Exchange");
       setAvailableProviders(["OKX", "Binance", "Kraken", "Coinbase"]);
       
