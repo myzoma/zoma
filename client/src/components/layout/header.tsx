@@ -13,10 +13,10 @@ export function Header() {
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50" style={{ fontFamily: 'Tajawal, Arial, sans-serif' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex flex-row-reverse items-center justify-between h-16" dir="rtl">
           
           {/* اسم الموقع والوصف في اليمين للتخطيط العربي */}
-          <div className="order-2 flex items-center">
+          <div className="flex items-center">
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-all duration-300 hover:scale-105">
               <div className="flex flex-col items-end text-right">
                 <span className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -31,7 +31,7 @@ export function Header() {
           </div>
 
           {/* أزرار التحكم في اليسار */}
-          <div className="order-1 flex items-center space-x-4">
+          <div className="flex items-center space-x-4" dir="ltr">
             <Button
               variant="ghost"
               size="sm"
