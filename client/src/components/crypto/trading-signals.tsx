@@ -31,7 +31,7 @@ export function TradingSignals() {
       const result = await response.json();
       if (result.code !== '0' || !result.data) throw new Error('Invalid OKX response');
 
-      return result.data.map((candle: any) => ({
+      return result.data.map((candle: any[]) => ({
         time: parseInt(candle[0]),
         open: parseFloat(candle[1]),
         high: parseFloat(candle[2]),
@@ -77,7 +77,7 @@ export function TradingSignals() {
           
           if (analysis.success && analysis.patterns && analysis.patterns.length > 0) {
             // استخدام أفضل نمط للإشارة
-            const bestPattern = analysis.patterns.sort((a, b) => b.confidence - a.confidence)[0];
+            const bestPattern = analysis.patterns.sort((a: any, b: any) => b.confidence - a.confidence)[0];
             
             // تحديد نوع الإشارة بناءً على النمط والاتجاه
             const signalType = bestPattern.direction === 'bullish' ? 'buy' : 'sell';

@@ -136,46 +136,16 @@
     animation: bounce 2s infinite;
   }
 
-  /* Enhanced shadows for better visibility */
+  /* تحسين الظلال */
   .shadow-soft {
-    box-shadow: 0 2px 4px 0 rgba(255, 255, 255, 0.1), 
-                0 1px 3px 0 rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-  }
-
-  .dark .shadow-soft {
-    box-shadow: 0 2px 4px 0 rgba(255, 255, 255, 0.2), 
-                0 1px 3px 0 rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
 
   .shadow-container {
-    box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.12), 
-                0 2px 4px -1px rgba(0, 0, 0, 0.06),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.05);
-  }
-
-  .dark .shadow-container {
-    box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.18), 
-                0 2px 4px -1px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .card-enhanced {
-    background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.9), 
-                rgba(255, 255, 255, 0.7));
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .dark .card-enhanced {
-    background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.1), 
-                rgba(255, 255, 255, 0.05));
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
   }
 }
