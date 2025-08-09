@@ -5,15 +5,8 @@ import { TrendingUp, TrendingDown, Activity, BarChart3 } from "lucide-react";
 export function CryptoOverview() {
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            محلل موجات إليوت للعملات الرقمية
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            تحليل متقدم لأسواق العملات الرقمية باستخدام نظرية موجات إليوت
-          </p>
-        </div>
+      {/* تم حذف العنوان والوصف حسب طلب المستخدم */}
+      <div className="flex items-center justify-end mb-6">
         <Badge variant="secondary" className="text-sm">
           <Activity className="h-4 w-4 mr-2" />
           نشط
