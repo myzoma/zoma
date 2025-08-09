@@ -89,20 +89,43 @@ export function TradingSignals() {
             
             if (bestPattern.targets) {
               if (isMotivePattern) {
-                targetPrice = bestPattern.targets.wave5_fib618 || 
-                             bestPattern.targets.wave5_fib1000 ||
-                             crypto.price * (signalType === 'buy' ? 1.05 : 0.95);
+                if (signalType === 'buy') {
+                  targetPrice = bestPattern.targets.wave5_fib618 || 
+                               bestPattern.targets.wave5_fib1000 ||
+                               crypto.price * 1.05;
+                } else {
+                  targetPrice = bestPattern.targets.wave5_fib618 || 
+                               bestPattern.targets.wave5_fib1000 ||
+                               crypto.price * 0.95;
+                }
               } else {
-                targetPrice = bestPattern.targets.waveC_fib618 ||
-                             bestPattern.targets.finalTarget ||
-                             crypto.price * (signalType === 'buy' ? 1.03 : 0.97);
+                if (signalType === 'buy') {
+                  targetPrice = bestPattern.targets.waveC_fib618 ||
+                               bestPattern.targets.finalTarget ||
+                               crypto.price * 1.03;
+                } else {
+                  targetPrice = bestPattern.targets.waveC_fib618 ||
+                               bestPattern.targets.finalTarget ||
+                               crypto.price * 0.97;
+                }
               }
             } else {
               // احتياطي إذا لم تكن الأهداف متاحة
-              targetPrice = crypto.price * (signalType === 'buy' ? 1.04 : 0.96);
+              if (signalType === 'buy') {
+                targetPrice = crypto.price * 1.04;
+              } else {
+                targetPrice = crypto.price * 0.96;
+              }
             }
             
-            stopLoss = crypto.price * (signalType === 'buy' ? 0.97 : 1.03);
+            // حساب إيقاف الخسارة - منطق صحيح للإشارات الصاعدة والهابطة
+            if (signalType === 'buy') {
+              // للإشارات الصاعدة: إيقاف الخسارة تحت سعر الدخول
+              stopLoss = crypto.price * 0.97;
+            } else {
+              // للإشارات الهابطة: إيقاف الخسارة فوق سعر الدخول  
+              stopLoss = crypto.price * 1.03;
+            }
             
             realSignals.push({
               id: Date.now() + i,
