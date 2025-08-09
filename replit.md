@@ -33,6 +33,8 @@ This is a comprehensive cryptocurrency market analysis application built with Re
 ✓ **Top 100 Cryptocurrencies Integration**: Complete list of top 100 cryptocurrencies ranked by market cap with real-time data support
 ✓ **Compact Dropdown Interface**: Converted crypto selector to space-efficient dropdown with search and category filtering
 ✓ **Developer Support Link**: Added support donation link with animated heart icon positioned next to crypto selector
+✓ **Dynamic Market Data**: Market data section now displays top 10 gainers and top 10 losers with interactive tabs for switching between categories
+✓ **Real-time Market Movement**: Complete dynamic sorting by highest gains and biggest losses updated every minute with authentic OKX data
 
 # User Preferences
 
