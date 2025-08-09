@@ -1,4 +1,4 @@
-import { TrendingUp, Sun, Moon, ChevronDown, Menu, X } from "lucide-react";
+import { TrendingUp, Sun, Moon, ChevronDown, Menu, X, Download } from "lucide-react";
 import { useTheme } from "../theme-provider";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
