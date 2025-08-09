@@ -99,25 +99,41 @@ class FreeRealDataProvider {
         const ticker = data.data.find((t: any) => t.instId === okxSymbol);
         
         if (ticker) {
-          const currentPrice = parseFloat(ticker.last) || 0;
-          const changePercent24h = parseFloat(ticker.chgPc) * 100 || 0; // OKX returns as decimal
-          const change24h = parseFloat(ticker.chg) || 0; // استخدام القيمة المباشرة
+          const currentPrice = parseFloat(ticker.last);
+          let changePercent24h = parseFloat(ticker.chgPc);
+          const change24h = parseFloat(ticker.chg);
+          const high24h = parseFloat(ticker.high24h);
+          const low24h = parseFloat(ticker.low24h);
+          const volume24h = parseFloat(ticker.vol24h);
 
-          // التأكد من أن النسبة المئوية ليست صفر أو NaN
-          const validChangePercent = isNaN(changePercent24h) || changePercent24h === 0 
-            ? (Math.random() - 0.5) * 10 // نسبة عشوائية واقعية بين -5% و +5%
-            : changePercent24h;
+          // OKX sometimes returns chgPc as a percentage already, sometimes as decimal
+          if (!isNaN(changePercent24h)) {
+            // If the value is between -1 and 1, it's likely a decimal, so multiply by 100
+            if (Math.abs(changePercent24h) <= 1) {
+              changePercent24h = changePercent24h * 100;
+            }
+          } else {
+            // If chgPc is invalid, try to calculate from chg and current price
+            if (!isNaN(change24h) && currentPrice > 0) {
+              changePercent24h = (change24h / (currentPrice - change24h)) * 100;
+            } else {
+              changePercent24h = 0; // Default to 0 if we can't calculate
+            }
+          }
 
-          results.push({
-            symbol,
-            price: currentPrice,
-            change24h: change24h || (currentPrice * validChangePercent) / 100,
-            changePercent24h: validChangePercent,
-            high24h: parseFloat(ticker.high24h) || currentPrice * 1.05,
-            low24h: parseFloat(ticker.low24h) || currentPrice * 0.95,
-            volume24h: parseFloat(ticker.vol24h) || 1000000,
-            lastUpdate: new Date().toISOString()
-          });
+          // التأكد من صحة السعر فقط - نسبة التغيير يمكن أن تكون 0
+          if (!isNaN(currentPrice) && currentPrice > 0) {
+            results.push({
+              symbol,
+              price: currentPrice,
+              change24h: !isNaN(change24h) ? change24h : (currentPrice * changePercent24h) / 100,
+              changePercent24h: changePercent24h,
+              high24h: !isNaN(high24h) ? high24h : currentPrice * 1.05,
+              low24h: !isNaN(low24h) ? low24h : currentPrice * 0.95,
+              volume24h: !isNaN(volume24h) ? volume24h : 1000000,
+              lastUpdate: new Date().toISOString()
+            });
+          }
         }
       }
 
@@ -169,25 +185,28 @@ class FreeRealDataProvider {
         const ticker = data.find((t: any) => t.symbol === binanceSymbol);
         
         if (ticker) {
-          const currentPrice = parseFloat(ticker.lastPrice) || 0;
-          const changePercent24h = parseFloat(ticker.priceChangePercent) || 0;
-          const change24h = parseFloat(ticker.priceChange) || 0;
+          const currentPrice = parseFloat(ticker.lastPrice);
+          const changePercent24h = parseFloat(ticker.priceChangePercent);
+          const change24h = parseFloat(ticker.priceChange);
+          const high24h = parseFloat(ticker.highPrice);
+          const low24h = parseFloat(ticker.lowPrice);
+          const volume24h = parseFloat(ticker.volume);
 
-          // التأكد من أن النسبة المئوية ليست صفر أو NaN
-          const validChangePercent = isNaN(changePercent24h) || changePercent24h === 0 
-            ? (Math.random() - 0.5) * 8 // نسبة عشوائية واقعية بين -4% و +4%
-            : changePercent24h;
-
-          results.push({
-            symbol,
-            price: currentPrice,
-            change24h: change24h || (currentPrice * validChangePercent) / 100,
-            changePercent24h: validChangePercent,
-            high24h: parseFloat(ticker.highPrice) || currentPrice * 1.05,
-            low24h: parseFloat(ticker.lowPrice) || currentPrice * 0.95,
-            volume24h: parseFloat(ticker.volume) || 1000000,
-            lastUpdate: new Date().toISOString()
-          });
+          // التأكد من صحة البيانات الأساسية فقط (السعر والتغيير)
+          if (!isNaN(currentPrice) && currentPrice > 0 && !isNaN(changePercent24h)) {
+            results.push({
+              symbol,
+              price: currentPrice,
+              change24h: !isNaN(change24h) ? change24h : (currentPrice * changePercent24h) / 100,
+              changePercent24h: changePercent24h,
+              high24h: !isNaN(high24h) ? high24h : currentPrice * 1.05,
+              low24h: !isNaN(low24h) ? low24h : currentPrice * 0.95,
+              volume24h: !isNaN(volume24h) ? volume24h : 1000000,
+              lastUpdate: new Date().toISOString()
+            });
+          } else {
+            console.log(`تخطي ${symbol} - بيانات أساسية غير صحيحة من Binance: السعر=${currentPrice}, التغيير=${changePercent24h}%`);
+          }
         }
       }
 
