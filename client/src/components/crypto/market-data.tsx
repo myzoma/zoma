@@ -36,13 +36,13 @@ export function MarketData() {
       const gainers = data
         .filter(crypto => crypto.changePercent24h > 0) // فقط العملات الرابحة
         .sort((a, b) => b.changePercent24h - a.changePercent24h) // ترتيب تنازلي
-        .slice(0, 8); // أفضل 8 رابحين
+        .slice(0, 10); // أفضل 10 رابحين
       
       // ترتيب العملات حسب أكبر نسبة خسارة في 24 ساعة
       const losers = data
         .filter(crypto => crypto.changePercent24h < 0) // فقط العملات الخاسرة
         .sort((a, b) => a.changePercent24h - b.changePercent24h) // ترتيب تصاعدي (أكبر خسارة أولاً)
-        .slice(0, 8); // أكبر 8 خاسرين
+        .slice(0, 10); // أكبر 10 خاسرين
       
       setTopGainers(gainers);
       setTopLosers(losers);
@@ -51,8 +51,8 @@ export function MarketData() {
       
       if (showToast && data.length > 0) {
         toast({
-          title: "تحديث أعلى الرابحين",
-          description: `تم العثور على ${gainers.length} عملة رابحة من أصل ${data.length}`,
+          title: "تحديث بيانات السوق",
+          description: `${gainers.length} رابحة، ${losers.length} خاسرة من أصل ${data.length} عملة`,
         });
       }
       
@@ -169,8 +169,8 @@ export function MarketData() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center">
-              <DollarSign className="h-5 w-5 mr-2" />
-              بيانات السوق المباشرة
+              <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
+              حركة السوق الديناميكية
             </CardTitle>
             <CardDescription>
               {currentSource ? `البيانات الحالية من: ${currentSource}` : 'أسعار العملات الرقمية الحقيقية'}
@@ -232,7 +232,43 @@ export function MarketData() {
           </div>
         ) : cryptoData.length > 0 ? (
           <div className="space-y-4">
-            {cryptoData.map(renderCryptoRow)}
+            {/* تبويبات الاختيار */}
+            <div className="flex items-center justify-center space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <Button
+                variant={viewMode === 'gainers' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('gainers')}
+                className="flex-1"
+              >
+                <TrendingUp className="h-4 w-4 mr-2" />
+                أعلى الرابحين ({topGainers.length})
+              </Button>
+              <Button
+                variant={viewMode === 'losers' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('losers')}
+                className="flex-1"
+              >
+                <TrendingDown className="h-4 w-4 mr-2" />
+                أكبر الخاسرين ({topLosers.length})
+              </Button>
+              <Button
+                variant={viewMode === 'all' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('all')}
+                className="flex-1"
+              >
+                <DollarSign className="h-4 w-4 mr-2" />
+                الكل ({cryptoData.length})
+              </Button>
+            </div>
+            
+            {/* عرض البيانات حسب الوضع المختار */}
+            <div className="space-y-4">
+              {viewMode === 'gainers' && topGainers.map(renderCryptoRow)}
+              {viewMode === 'losers' && topLosers.map(renderCryptoRow)}
+              {viewMode === 'all' && cryptoData.map(renderCryptoRow)}
+            </div>
           </div>
         ) : (
           <div className="text-center py-8">
