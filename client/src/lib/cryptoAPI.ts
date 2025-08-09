@@ -74,10 +74,10 @@ class BinanceProvider implements APIProvider {
   }
 }
 
-// CoinGecko API Provider
-class CoinGeckoProvider implements APIProvider {
-  name = 'CoinGecko';
-  private baseURL = 'https://api.coingecko.com/api/v3';
+// Alternative Free API Provider
+class AlternativeProvider implements APIProvider {
+  name = 'CoinCap';
+  private baseURL = 'https://api.coincap.io/v2';
 
   async getPrices(symbols: string[]): Promise<CryptoPriceData[]> {
     try {

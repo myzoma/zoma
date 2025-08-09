@@ -2,10 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { TrendingUp, TrendingDown, AlertTriangle, Target, Clock, Signal } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, Target, Clock, Signal, RefreshCw } from "lucide-react";
+import { multiSourceCryptoService } from "@/lib/multiSourceCryptoData";
+import { localCryptoDataService } from "@/lib/localCryptoData";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function TradingSignals() {
-  const signals = [
+  const [signals, setSignals] = useState([
     {
       id: 1,
       pair: "BTC/USDT",
@@ -45,7 +49,60 @@ export function TradingSignals() {
       timestamp: "منذ 5 ساعات",
       status: "مكتملة"
     }
-  ];
+  ]);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  // توليد إشارات تداول حقيقية
+  const generateRealSignals = async () => {
+    setIsLoading(true);
+    try {
+      const result = await multiSourceCryptoService.getPrices(["BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT"]);
+      
+      const realSignals = result.data.map((crypto, index) => {
+        const analysis = localCryptoDataService.analyzeElliottWave(crypto);
+        const isPositive = crypto.changePercent24h > 0;
+        
+        return {
+          id: index + 1,
+          pair: crypto.symbol,
+          type: isPositive ? "buy" : "sell",
+          pattern: `موجة ${analysis.pattern}`,
+          confidence: analysis.confidence,
+          entryPrice: crypto.price,
+          targetPrice: crypto.price * (isPositive ? 1.08 : 0.92),
+          stopLoss: crypto.price * (isPositive ? 0.95 : 1.05),
+          timeFrame: "4h",
+          timestamp: "الآن",
+          status: analysis.confidence > 70 ? "نشط" : "مراقبة"
+        };
+      });
+      
+      setSignals(realSignals);
+      
+      toast({
+        title: "تم تحديث الإشارات",
+        description: `تم توليد ${realSignals.length} إشارة من البيانات الحقيقية`
+      });
+      
+    } catch (error) {
+      console.error('خطأ في توليد الإشارات:', error);
+      toast({
+        title: "خطأ في الإشارات",
+        description: "تعذر توليد الإشارات من البيانات الحقيقية",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    generateRealSignals();
+    const interval = setInterval(generateRealSignals, 180000); // كل 3 دقائق
+    return () => clearInterval(interval);
+  }, []);
 
   const alerts = [
     {
@@ -169,13 +226,26 @@ export function TradingSignals() {
       {/* إشارات التداول */}
       <Card className="shadow-container card-enhanced">
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Signal className="h-5 w-5 mr-2" />
-            إشارات التداول
-          </CardTitle>
-          <CardDescription>
-            إشارات مبنية على تحليل موجات إليوت
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center">
+                <Signal className="h-5 w-5 mr-2" />
+                إشارات التداول الحقيقية
+              </CardTitle>
+              <CardDescription>
+                إشارات مبنية على البيانات الحقيقية وتحليل موجات إليوت
+              </CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={generateRealSignals}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              تحديث
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, RefreshCw, DollarSign, Volume2, Wifi, WifiOff, AlertCircle } from "lucide-react";
-import { cryptoDataService, type CryptoPriceData } from "@/lib/cryptoAPI";
+import { multiSourceCryptoService, type LocalCryptoPriceData as CryptoPriceData } from "@/lib/multiSourceCryptoData";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -10,6 +10,7 @@ export function MarketData() {
   const [cryptoData, setCryptoData] = useState<CryptoPriceData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentSource, setCurrentSource] = useState<string>("");
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
   const { toast } = useToast();
   
@@ -19,23 +20,23 @@ export function MarketData() {
     "MATIC/USDT", "DOT/USDT", "AVAX/USDT", "LINK/USDT"
   ];
 
-  // جلب البيانات الحقيقية
+  // جلب البيانات من المصادر المتعددة
   const fetchRealData = async (showToast = false) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      console.log('جلب البيانات الحقيقية من APIs...');
-      const data = await cryptoDataService.getPrices(watchedSymbols);
-      const providers = await cryptoDataService.getAvailableProviders();
+      console.log('جلب البيانات من المصادر المتعددة...');
+      const result = await multiSourceCryptoService.getPrices(watchedSymbols);
       
-      setCryptoData(data);
-      setAvailableProviders(providers);
+      setCryptoData(result.data);
+      setCurrentSource(result.source);
+      setAvailableProviders(result.availableSources);
       
-      if (showToast && data.length > 0) {
+      if (showToast && result.data.length > 0) {
         toast({
           title: "تم تحديث البيانات",
-          description: `تم جلب ${data.length} عملة من ${providers.join(', ')}`,
+          description: `تم جلب ${result.data.length} عملة من ${result.source}`,
         });
       }
       
@@ -156,7 +157,12 @@ export function MarketData() {
               بيانات السوق المباشرة
             </CardTitle>
             <CardDescription>
-              أسعار العملات الرقمية الحقيقية من {availableProviders.join(', ')}
+              {currentSource ? `البيانات الحالية من: ${currentSource}` : 'أسعار العملات الرقمية الحقيقية'}
+              {availableProviders.length > 1 && (
+                <span className="text-xs text-gray-500 block">
+                  مصادر متاحة: {availableProviders.join(', ')}
+                </span>
+              )}
             </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
