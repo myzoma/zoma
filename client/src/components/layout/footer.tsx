@@ -20,11 +20,11 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center flex-row-reverse gap-2 mb-4">
-              <span className="text-xl font-bold text-gray-900 dark:text-white">محلل العملات الرقمية</span>
+            <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
+              <span className="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">محلل العملات الرقمية</span>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
               منصة تحليل العملات الرقمية المتقدمة باستخدام نظرية موجات إليوت والبيانات الحقيقية من أسواق التداول العالمية.
