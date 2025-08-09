@@ -4,6 +4,7 @@ import { CryptoOverview } from "@/components/crypto/crypto-overview";
 import { WaveAnalysisPanel } from "@/components/crypto/wave-analysis-panel";
 import { MarketData } from "@/components/crypto/market-data";
 import { TradingSignals } from "@/components/crypto/trading-signals";
+import { TestAPI } from "@/components/crypto/test-api";
 
 export default function Dashboard() {
   return (
@@ -11,6 +12,7 @@ export default function Dashboard() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <TestAPI />
         <CryptoOverview />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -216,9 +216,10 @@ export class CryptoDataService {
   private cacheTimeout = 30000; // 30 ثانية
 
   constructor() {
+    // ترتيب الأولوية: CoinGecko أولاً (لأنه مجاني ومتاح عالمياً)
     this.providers = [
-      new BinanceProvider(),
       new CoinGeckoProvider(),
+      new BinanceProvider(),
       new CoinMarketCapProvider()
     ];
   }
