@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, TrendingDown, RefreshCw, DollarSign, Volume2, Wifi, WifiOff, AlertCircle } from "lucide-react";
 import { realCryptoDataService, type RealCryptoPriceData as CryptoPriceData } from "@/lib/realCryptoAPI";
+import { getTop20TradingSymbols } from "@/lib/top100CryptoList";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,11 +15,8 @@ export function MarketData() {
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
   const { toast } = useToast();
   
-  // قائمة العملات المراد تتبعها
-  const watchedSymbols = [
-    "BTC/USDT", "ETH/USDT", "ADA/USDT", "SOL/USDT", 
-    "MATIC/USDT", "DOT/USDT", "AVAX/USDT", "LINK/USDT"
-  ];
+  // قائمة أفضل 20 عملة مشفرة مرتبة حسب القيمة السوقية
+  const watchedSymbols = getTop20TradingSymbols();
 
   // جلب البيانات الحقيقية من APIs متعددة
   const fetchRealData = async (showToast = false) => {

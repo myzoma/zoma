@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 // حالة مشتركة للعملة والإطار الزمني المختارين
 let sharedAnalysisState = {
   selectedCrypto: "BTC/USDT",
-  timeFrame: "4h",
+  timeFrame: "1d", // تم تغييره إلى يومي كما طلب المستخدم
   analysisResult: null as any
 };
 
