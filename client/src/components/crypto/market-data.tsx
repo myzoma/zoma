@@ -93,10 +93,9 @@ export function MarketData() {
     const isPositive = crypto.changePercent24h > 0;
     const Icon = isPositive ? TrendingUp : TrendingDown;
     const changeColor = isPositive ? "text-green-600" : "text-red-600";
-    const bgColor = isPositive ? "bg-green-50 dark:bg-green-950" : "bg-red-50 dark:bg-red-950";
 
     return (
-      <div key={crypto.symbol} className={`p-4 rounded-lg border ${bgColor} border-gray-200 dark:border-gray-700 shadow-soft`}>
+      <div key={crypto.symbol} className="p-4 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-soft">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
             <div>

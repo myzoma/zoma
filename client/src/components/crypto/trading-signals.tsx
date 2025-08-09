@@ -283,20 +283,20 @@ export function TradingSignals() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-green-600">84%</div>
+            <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">84%</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">معدل النجاح</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-blue-600">7</div>
+            <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">7</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">إشارات نشطة</p>
             </div>
-            <div className="text-center p-4 bg-purple-50 dark:bg-purple-950 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-purple-600">156</div>
+            <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">156</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي الإشارات</p>
             </div>
-            <div className="text-center p-4 bg-orange-50 dark:bg-orange-950 rounded-lg shadow-soft">
-              <div className="text-2xl font-bold text-orange-600">+23%</div>
+            <div className="text-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-soft">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">+23%</div>
               <p className="text-sm text-gray-600 dark:text-gray-400">العائد الشهري</p>
             </div>
           </div>
