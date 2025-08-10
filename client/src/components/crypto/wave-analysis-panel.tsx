@@ -353,18 +353,125 @@ export function WaveAnalysisPanel() {
                             </p>
                           </div>
                         </div>
+
+                        {/* تحليل مفصل للأنماط المكتشفة */}
                         <div className="p-4 border rounded-lg">
-                          <h4 className="font-semibold mb-2">أقوى نمط</h4>
+                          <h4 className="font-semibold mb-3">تحليل الأنماط المكتشفة</h4>
                           {(() => {
-                            const bestPattern = analysisResult.patterns.reduce((best: any, current: any) => 
-                              (current.confidence || 0) > (best.confidence || 0) ? current : best
-                            );
+                            const patterns = analysisResult.patterns;
+                            const motivePatterns = patterns.filter((p: any) => p.type === 'motive');
+                            const correctivePatterns = patterns.filter((p: any) => p.type === 'corrective');
+                            const bullishPatterns = patterns.filter((p: any) => p.direction === 'bullish');
+                            const bearishPatterns = patterns.filter((p: any) => p.direction === 'bearish');
+                            
+                            const getConfidenceColor = (confidence: number) => {
+                              if (confidence >= 80) return 'text-green-600';
+                              if (confidence >= 60) return 'text-yellow-600';
+                              return 'text-red-600';
+                            };
+
+                            const getConfidenceDescription = (confidence: number) => {
+                              if (confidence >= 80) return 'ثقة عالية جداً';
+                              if (confidence >= 60) return 'ثقة متوسطة';
+                              return 'ثقة منخفضة';
+                            };
+
+                            const getPatternExplanation = (type: string, direction: string, confidence: number) => {
+                              if (type === 'motive') {
+                                if (direction === 'bullish') {
+                                  return `نمط دافع صاعد (موجات 1-2-3-4-5) - يشير إلى استمرار الاتجاه الصاعد`;
+                                } else {
+                                  return `نمط دافع هابط (موجات 1-2-3-4-5) - يشير إلى استمرار الاتجاه الهابط`;
+                                }
+                              } else {
+                                if (direction === 'bullish') {
+                                  return `نمط تصحيحي صاعد (موجات A-B-C) - تصحيح مؤقت في اتجاه صاعد`;
+                                } else {
+                                  return `نمط تصحيحي هابط (موجات A-B-C) - تصحيح مؤقت في اتجاه هابط`;
+                                }
+                              }
+                            };
+
                             return (
-                              <div className="flex items-center justify-between">
-                                <span>{bestPattern.type === 'motive' ? 'نمط دافع' : 'نمط تصحيحي'}</span>
-                                <Badge variant={bestPattern.direction === 'bullish' ? 'default' : 'destructive'}>
-                                  ثقة: {Math.round(bestPattern.confidence || 0)}%
-                                </Badge>
+                              <div className="space-y-3">
+                                {/* إحصائيات الأنماط */}
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div className="flex justify-between">
+                                    <span>أنماط دافعة:</span>
+                                    <span className="font-medium">{motivePatterns.length}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>أنماط تصحيحية:</span>
+                                    <span className="font-medium">{correctivePatterns.length}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>أنماط صاعدة:</span>
+                                    <span className="font-medium text-green-600">{bullishPatterns.length}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>أنماط هابطة:</span>
+                                    <span className="font-medium text-red-600">{bearishPatterns.length}</span>
+                                  </div>
+                                </div>
+
+                                {/* أقوى الأنماط */}
+                                <div className="border-t pt-3">
+                                  <h5 className="font-medium mb-2">أقوى الأنماط:</h5>
+                                  {patterns
+                                    .sort((a: any, b: any) => (b.confidence || 0) - (a.confidence || 0))
+                                    .slice(0, 3)
+                                    .map((pattern: any, index: number) => (
+                                      <div key={index} className="mb-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                        <div className="flex items-center justify-between mb-1">
+                                          <Badge variant={pattern.direction === 'bullish' ? 'default' : 'destructive'}>
+                                            {pattern.type === 'motive' ? 'دافع' : 'تصحيحي'} - {pattern.direction === 'bullish' ? 'صاعد' : 'هابط'}
+                                          </Badge>
+                                          <span className={`font-medium ${getConfidenceColor(pattern.confidence || 0)}`}>
+                                            {Math.round(pattern.confidence || 0)}% ({getConfidenceDescription(pattern.confidence || 0)})
+                                          </span>
+                                        </div>
+                                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                                          {getPatternExplanation(pattern.type, pattern.direction, pattern.confidence || 0)}
+                                        </p>
+                                        {pattern.waveCount && (
+                                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                            عدد الموجات: {pattern.waveCount}
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))
+                                  }
+                                </div>
+
+                                {/* توصيات التداول */}
+                                <div className="border-t pt-3">
+                                  <h5 className="font-medium mb-2">التوصية العامة:</h5>
+                                  {(() => {
+                                    const avgConfidence = patterns.reduce((sum: number, p: any) => sum + (p.confidence || 0), 0) / patterns.length;
+                                    const strongBullish = bullishPatterns.filter((p: any) => (p.confidence || 0) >= 70).length;
+                                    const strongBearish = bearishPatterns.filter((p: any) => (p.confidence || 0) >= 70).length;
+                                    
+                                    let recommendation = '';
+                                    let recommendationColor = '';
+                                    
+                                    if (strongBullish > strongBearish && avgConfidence >= 60) {
+                                      recommendation = 'اتجاه صاعد محتمل - فرصة شراء';
+                                      recommendationColor = 'text-green-600';
+                                    } else if (strongBearish > strongBullish && avgConfidence >= 60) {
+                                      recommendation = 'اتجاه هابط محتمل - حذر في الشراء';
+                                      recommendationColor = 'text-red-600';
+                                    } else {
+                                      recommendation = 'السوق في حالة تذبذب - انتظار تأكيد';
+                                      recommendationColor = 'text-yellow-600';
+                                    }
+                                    
+                                    return (
+                                      <p className={`text-sm font-medium ${recommendationColor}`}>
+                                        {recommendation}
+                                      </p>
+                                    );
+                                  })()}
+                                </div>
                               </div>
                             );
                           })()}
