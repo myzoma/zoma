@@ -9,7 +9,7 @@ import { FearGreedIndex } from "@/components/crypto/fear-greed-index";
 import { CryptoDropdown } from "@/components/crypto/crypto-dropdown";
 import { useAnalysisState } from "@/hooks/use-analysis-state";
 import { Button } from "@/components/ui/button";
-import { Heart, ExternalLink } from "lucide-react";
+import { Heart, ExternalLink, UserPlus } from "lucide-react";
 import { SiBinance } from "react-icons/si";
 import { FaTelegram, FaTwitter } from "react-icons/fa";
 
@@ -98,6 +98,51 @@ export default function Dashboard() {
                 <ExternalLink className="h-3 w-3 text-white/80" />
               </a>
             </Button>
+
+            {/* مربع روابط التسجيل في المنصات */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-1">
+                <UserPlus className="h-3 w-3 text-gray-600 dark:text-gray-400" />
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-medium hidden lg:inline">التسجيل:</span>
+                
+                {/* Binance Referral */}
+                <a
+                  href="https://accounts.binance.com/register?ref=YASER123"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title="التسجيل في Binance"
+                >
+                  <SiBinance className="h-4 w-4 text-yellow-500" />
+                </a>
+
+                {/* OKX Referral */}
+                <a
+                  href="https://www.okx.com/join/YASER"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title="التسجيل في OKX"
+                >
+                  <div className="h-4 w-4 bg-black dark:bg-white rounded-sm flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-white dark:text-black">OKX</span>
+                  </div>
+                </a>
+
+                {/* Bybit Referral */}
+                <a
+                  href="https://www.bybit.com/invite?ref=YASER"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  title="التسجيل في Bybit"
+                >
+                  <div className="h-4 w-4 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-sm flex items-center justify-center">
+                    <span className="text-[6px] font-bold text-white">BB</span>
+                  </div>
+                </a>
+              </div>
+            </div>
 
             {/* رابط الدعم */}
             <Button
