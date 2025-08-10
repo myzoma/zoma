@@ -5,7 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, BarChart3, Activity, Target, AlertCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, BarChart3, Activity, Target, AlertCircle, LineChart } from "lucide-react";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceDot, ReferenceLine } from 'recharts';
 // @ts-ignore
 import ElliottWaveAnalyzer from "@/lib/elliottWaveAnalyzer.js";
 import { realCryptoDataService } from "@/lib/realCryptoAPI";
@@ -340,143 +341,193 @@ export function WaveAnalysisPanel() {
                   
                   <TabsContent value="summary" className="mt-4">
                     {analysisResult.success && analysisResult.patterns?.length > 0 ? (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 border rounded-lg">
-                            <h4 className="font-semibold mb-2">عدد الأنماط المكتشفة</h4>
-                            <p className="text-2xl font-bold text-blue-600">{analysisResult.patterns.length}</p>
-                          </div>
-                          <div className="p-4 border rounded-lg">
-                            <h4 className="font-semibold mb-2">متوسط الثقة</h4>
-                            <p className="text-2xl font-bold text-green-600">
-                              {Math.round(analysisResult.patterns.reduce((sum: number, p: any) => sum + (p.confidence || 0), 0) / analysisResult.patterns.length || 0)}%
-                            </p>
-                          </div>
-                        </div>
+                      (() => {
+                        // العثور على أقوى نمط لعرضه في الشارت
+                        const bestPattern = analysisResult.patterns.reduce((best: any, current: any) => 
+                          (current.confidence || 0) > (best.confidence || 0) ? current : best
+                        );
 
-                        {/* تحليل مفصل للأنماط المكتشفة */}
-                        <div className="p-4 border rounded-lg">
-                          <h4 className="font-semibold mb-3">تحليل الأنماط المكتشفة</h4>
-                          {(() => {
-                            const patterns = analysisResult.patterns;
-                            const motivePatterns = patterns.filter((p: any) => p.type === 'motive');
-                            const correctivePatterns = patterns.filter((p: any) => p.type === 'corrective');
-                            const bullishPatterns = patterns.filter((p: any) => p.direction === 'bullish');
-                            const bearishPatterns = patterns.filter((p: any) => p.direction === 'bearish');
-                            
-                            const getConfidenceColor = (confidence: number) => {
-                              if (confidence >= 80) return 'text-green-600';
-                              if (confidence >= 60) return 'text-yellow-600';
-                              return 'text-red-600';
-                            };
+                        // استخدام نقاط الدوران الحقيقية المكتشفة من التحليل
+                        const realPivots = analysisResult.pivots || [];
+                        
+                        // إنشاء بيانات الشارت من النقاط الحقيقية فقط
+                        const chartData = realPivots.length > 0 
+                          ? realPivots.slice(0, 8).map((pivot: any, index: number) => ({
+                              point: index + 1,
+                              price: pivot.price,
+                              label: `${pivot.type === 'high' ? 'قمة' : 'قاع'} ${index + 1}`,
+                              type: pivot.type,
+                              time: new Date(pivot.time).toLocaleDateString('ar')
+                            }))
+                          : [];
 
-                            const getConfidenceDescription = (confidence: number) => {
-                              if (confidence >= 80) return 'ثقة عالية جداً';
-                              if (confidence >= 60) return 'ثقة متوسطة';
-                              return 'ثقة منخفضة';
-                            };
+                        // تحديد اللون حسب اتجاه النمط
+                        const lineColor = bestPattern.direction === 'bullish' ? '#10b981' : '#ef4444';
+                        const dotColor = bestPattern.direction === 'bullish' ? '#059669' : '#dc2626';
 
-                            const getPatternExplanation = (type: string, direction: string, confidence: number) => {
-                              if (type === 'motive') {
-                                if (direction === 'bullish') {
-                                  return `نمط دافع صاعد (موجات 1-2-3-4-5) - يشير إلى استمرار الاتجاه الصاعد`;
-                                } else {
-                                  return `نمط دافع هابط (موجات 1-2-3-4-5) - يشير إلى استمرار الاتجاه الهابط`;
-                                }
-                              } else {
-                                if (direction === 'bullish') {
-                                  return `نمط تصحيحي صاعد (موجات A-B-C) - تصحيح مؤقت في اتجاه صاعد`;
-                                } else {
-                                  return `نمط تصحيحي هابط (موجات A-B-C) - تصحيح مؤقت في اتجاه هابط`;
-                                }
-                              }
-                            };
+                        // شرح النمط
+                        const getPatternExplanation = () => {
+                          if (bestPattern.type === 'motive') {
+                            if (bestPattern.direction === 'bullish') {
+                              return {
+                                title: 'نمط دافع صاعد (موجات 1-2-3-4-5)',
+                                description: 'يشير إلى استمرار الاتجاه الصاعد مع هدف سعري أعلى',
+                                prediction: 'متوقع استمرار الصعود'
+                              };
+                            } else {
+                              return {
+                                title: 'نمط دافع هابط (موجات 1-2-3-4-5)',
+                                description: 'يشير إلى استمرار الاتجاه الهابط مع هدف سعري أقل',
+                                prediction: 'متوقع استمرار الهبوط'
+                              };
+                            }
+                          } else {
+                            if (bestPattern.direction === 'bullish') {
+                              return {
+                                title: 'نمط تصحيحي صاعد (موجات A-B-C)',
+                                description: 'تصحيح مؤقت في اتجاه صاعد قبل استكمال الاتجاه الرئيسي',
+                                prediction: 'عودة للاتجاه الصاعد بعد التصحيح'
+                              };
+                            } else {
+                              return {
+                                title: 'نمط تصحيحي هابط (موجات A-B-C)',
+                                description: 'تصحيح مؤقت في اتجاه هابط قبل استكمال الاتجاه الرئيسي',
+                                prediction: 'عودة للاتجاه الهابط بعد التصحيح'
+                              };
+                            }
+                          }
+                        };
 
-                            return (
-                              <div className="space-y-3">
-                                {/* إحصائيات الأنماط */}
-                                <div className="grid grid-cols-2 gap-3 text-sm">
-                                  <div className="flex justify-between">
-                                    <span>أنماط دافعة:</span>
-                                    <span className="font-medium">{motivePatterns.length}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>أنماط تصحيحية:</span>
-                                    <span className="font-medium">{correctivePatterns.length}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>أنماط صاعدة:</span>
-                                    <span className="font-medium text-green-600">{bullishPatterns.length}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>أنماط هابطة:</span>
-                                    <span className="font-medium text-red-600">{bearishPatterns.length}</span>
-                                  </div>
+                        const patternInfo = getPatternExplanation();
+
+                        return (
+                          <div className="space-y-4">
+                            {/* معلومات النمط */}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="p-4 border rounded-lg">
+                                <h4 className="font-semibold mb-2">نوع النمط</h4>
+                                <Badge variant={bestPattern.direction === 'bullish' ? 'default' : 'destructive'}>
+                                  {bestPattern.type === 'motive' ? 'دافع' : 'تصحيحي'} - {bestPattern.direction === 'bullish' ? 'صاعد' : 'هابط'}
+                                </Badge>
+                              </div>
+                              <div className="p-4 border rounded-lg">
+                                <h4 className="font-semibold mb-2">درجة الثقة</h4>
+                                <p className={`text-2xl font-bold ${
+                                  (bestPattern.confidence || 0) >= 80 ? 'text-green-600' : 
+                                  (bestPattern.confidence || 0) >= 60 ? 'text-yellow-600' : 'text-red-600'
+                                }`}>
+                                  {Math.round(bestPattern.confidence || 0)}%
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* الشارت - البيانات الحقيقية فقط */}
+                            {chartData.length > 0 ? (
+                              <div className="p-4 border rounded-lg">
+                                <div className="flex items-center gap-2 mb-4">
+                                  <LineChart className="h-5 w-5 text-blue-500" />
+                                  <h4 className="font-semibold">{patternInfo.title}</h4>
                                 </div>
-
-                                {/* أقوى الأنماط */}
-                                <div className="border-t pt-3">
-                                  <h5 className="font-medium mb-2">أقوى الأنماط:</h5>
-                                  {patterns
-                                    .sort((a: any, b: any) => (b.confidence || 0) - (a.confidence || 0))
-                                    .slice(0, 3)
-                                    .map((pattern: any, index: number) => (
-                                      <div key={index} className="mb-2 p-2 bg-gray-50 dark:bg-gray-800 rounded">
-                                        <div className="flex items-center justify-between mb-1">
-                                          <Badge variant={pattern.direction === 'bullish' ? 'default' : 'destructive'}>
-                                            {pattern.type === 'motive' ? 'دافع' : 'تصحيحي'} - {pattern.direction === 'bullish' ? 'صاعد' : 'هابط'}
-                                          </Badge>
-                                          <span className={`font-medium ${getConfidenceColor(pattern.confidence || 0)}`}>
-                                            {Math.round(pattern.confidence || 0)}% ({getConfidenceDescription(pattern.confidence || 0)})
-                                          </span>
-                                        </div>
-                                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                                          {getPatternExplanation(pattern.type, pattern.direction, pattern.confidence || 0)}
-                                        </p>
-                                        {pattern.waveCount && (
-                                          <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                            عدد الموجات: {pattern.waveCount}
-                                          </p>
-                                        )}
-                                      </div>
-                                    ))
-                                  }
-                                </div>
-
-                                {/* توصيات التداول */}
-                                <div className="border-t pt-3">
-                                  <h5 className="font-medium mb-2">التوصية العامة:</h5>
-                                  {(() => {
-                                    const avgConfidence = patterns.reduce((sum: number, p: any) => sum + (p.confidence || 0), 0) / patterns.length;
-                                    const strongBullish = bullishPatterns.filter((p: any) => (p.confidence || 0) >= 70).length;
-                                    const strongBearish = bearishPatterns.filter((p: any) => (p.confidence || 0) >= 70).length;
-                                    
-                                    let recommendation = '';
-                                    let recommendationColor = '';
-                                    
-                                    if (strongBullish > strongBearish && avgConfidence >= 60) {
-                                      recommendation = 'اتجاه صاعد محتمل - فرصة شراء';
-                                      recommendationColor = 'text-green-600';
-                                    } else if (strongBearish > strongBullish && avgConfidence >= 60) {
-                                      recommendation = 'اتجاه هابط محتمل - حذر في الشراء';
-                                      recommendationColor = 'text-red-600';
-                                    } else {
-                                      recommendation = 'السوق في حالة تذبذب - انتظار تأكيد';
-                                      recommendationColor = 'text-yellow-600';
-                                    }
-                                    
-                                    return (
-                                      <p className={`text-sm font-medium ${recommendationColor}`}>
-                                        {recommendation}
-                                      </p>
-                                    );
-                                  })()}
+                                
+                                <div className="h-64 w-full">
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <RechartsLineChart data={chartData}>
+                                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                                      <XAxis 
+                                        dataKey="point" 
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12 }}
+                                      />
+                                      <YAxis 
+                                        domain={['dataMin - 100', 'dataMax + 100']}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fontSize: 12 }}
+                                        tickFormatter={(value) => `$${value?.toLocaleString()}`}
+                                      />
+                                      <Tooltip 
+                                        formatter={(value: any, name: any) => [`$${value?.toLocaleString()}`, 'السعر الحقيقي من OKX']}
+                                        labelFormatter={(label) => `النقطة ${label}`}
+                                        contentStyle={{
+                                          backgroundColor: 'var(--background)',
+                                          border: '1px solid var(--border)',
+                                          borderRadius: '6px'
+                                        }}
+                                      />
+                                      <Line 
+                                        type="monotone" 
+                                        dataKey="price" 
+                                        stroke={lineColor}
+                                        strokeWidth={3}
+                                        dot={{ fill: dotColor, strokeWidth: 2, r: 6 }}
+                                        activeDot={{ r: 8, stroke: lineColor, strokeWidth: 2 }}
+                                      />
+                                      {/* نقاط الموجات الحقيقية */}
+                                      {chartData.map((point: any, index: number) => (
+                                        <ReferenceDot 
+                                          key={index}
+                                          x={point.point} 
+                                          y={point.price} 
+                                          r={4} 
+                                          fill={dotColor}
+                                          stroke="#fff"
+                                          strokeWidth={2}
+                                        />
+                                      ))}
+                                    </RechartsLineChart>
+                                  </ResponsiveContainer>
                                 </div>
                               </div>
-                            );
-                          })()}
-                        </div>
-                      </div>
+                            ) : (
+                              <div className="p-4 border rounded-lg">
+                                <div className="flex items-center gap-2 mb-4">
+                                  <AlertCircle className="h-5 w-5 text-yellow-500" />
+                                  <h4 className="font-semibold">لا توجد بيانات موجات كافية</h4>
+                                </div>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  لم يتم العثور على نقاط دوران واضحة في البيانات الحقيقية من OKX API. 
+                                  هذا يحدث عندما تكون السوق في حالة استقرار أو عدم وجود أنماط إليوت واضحة.
+                                  جرب إطار زمني مختلف أو عملة أخرى.
+                                </p>
+                              </div>
+                            )}
+
+                            {/* شرح النمط والتوقع */}
+                            <div className="p-4 border rounded-lg space-y-3">
+                              <div>
+                                <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">شرح النمط:</h5>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {patternInfo.description}
+                                </p>
+                              </div>
+                              
+                              <div className="border-t pt-3">
+                                <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">التوقع:</h5>
+                                <p className={`text-sm font-medium ${
+                                  bestPattern.direction === 'bullish' ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {patternInfo.prediction}
+                                </p>
+                              </div>
+
+                              {/* معلومات إضافية */}
+                              <div className="border-t pt-3">
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-500">نقاط الدوران المكتشفة:</span>
+                                    <span className="font-medium">{chartData.length || 'لا توجد'}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-500">الإطار الزمني:</span>
+                                    <span className="font-medium">{timeFrame}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })() 
                     ) : (
                       <div className="text-center py-8">
                         <p className="text-gray-600 dark:text-gray-400">لا توجد بيانات ملخص متاحة</p>
