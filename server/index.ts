@@ -52,7 +52,27 @@ app.use((req, res, next) => {
     // setting up all the other routes so the catch-all route
     // doesn't interfere with the other routes
     if (app.get("env") === "development") {
-      await setupVite(app, server);
+      try {
+        await setupVite(app, server);
+      } catch (viteError) {
+        console.error("Vite setup failed, serving basic HTML:", viteError);
+        // Fallback to simple static serving if Vite fails
+        app.get('*', (req, res) => {
+          res.send(`
+            <!DOCTYPE html>
+            <html>
+              <head><title>Crypto Dashboard Loading</title></head>
+              <body>
+                <div style="text-align: center; padding: 50px;">
+                  <h1>🔄 Crypto Dashboard Starting...</h1>
+                  <p>Application is initializing. Please refresh in a moment.</p>
+                  <script>setTimeout(() => location.reload(), 3000);</script>
+                </div>
+              </body>
+            </html>
+          `);
+        });
+      }
     } else {
       serveStatic(app);
     }

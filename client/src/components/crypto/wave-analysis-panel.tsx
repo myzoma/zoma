@@ -163,7 +163,12 @@ export function WaveAnalysisPanel() {
   };
 
   useEffect(() => {
-    runAnalysis();
+    // تأخير التحليل لتجنب التحميل الزائد على البداية
+    const timeout = setTimeout(() => {
+      runAnalysis();
+    }, 6000);
+    
+    return () => clearTimeout(timeout);
   }, [selectedCrypto, timeFrame]);
 
   const renderPatternCard = (pattern: any) => {

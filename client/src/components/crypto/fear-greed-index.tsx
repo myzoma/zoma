@@ -61,12 +61,18 @@ export function FearGreedIndex() {
 
   // تحديث البيانات عند تحميل المكون
   useEffect(() => {
-    fetchFearGreedIndex();
+    // تأخير التحميل الأولي لتجنب بطء بدء التطبيق
+    const initialTimeout = setTimeout(() => {
+      fetchFearGreedIndex();
+    }, 3000);
     
     // تحديث البيانات كل 10 دقائق
     const interval = setInterval(fetchFearGreedIndex, 600000);
     
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
   }, []);
 
   // تحديد اللون والأيقونة بناءً على القيمة

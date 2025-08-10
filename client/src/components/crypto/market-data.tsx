@@ -73,14 +73,20 @@ export function MarketData() {
 
   // تحديث البيانات عند تحميل المكون
   useEffect(() => {
-    fetchRealData();
+    // تأخير التحميل الأولي لتجنب بطء بدء التطبيق
+    const initialTimeout = setTimeout(() => {
+      fetchRealData();
+    }, 2000);
     
-    // تحديث البيانات كل دقيقة
+    // تحديث البيانات كل 3 دقائق بدلاً من كل دقيقة
     const interval = setInterval(() => {
       fetchRealData();
-    }, 60000);
+    }, 180000);
     
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
   }, []);
 
   // تنسيق القيم

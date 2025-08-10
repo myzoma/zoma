@@ -195,7 +195,12 @@ export function TradingSignals() {
   };
 
   useEffect(() => {
-    generateRealSignals();
+    // تأخير طلب الإشارات لتجنب التحميل الزائد على البداية
+    const timeout = setTimeout(() => {
+      generateRealSignals();
+    }, 5000);
+    
+    return () => clearTimeout(timeout);
   }, [selectedCrypto]);
 
   useEffect(() => {

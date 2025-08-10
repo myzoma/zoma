@@ -46,7 +46,7 @@ export function useSharedWaveData() {
   useEffect(() => {
     const interval = setInterval(() => {
       setWaveData({ ...sharedWaveData });
-    }, 1000); // تحديث كل ثانية
+    }, 30000); // تحديث كل 30 ثانية بدلاً من كل ثانية
 
     return () => clearInterval(interval);
   }, []);

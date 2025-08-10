@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { CryptoOverview } from "@/components/crypto/crypto-overview";
@@ -16,10 +17,36 @@ import { FaTelegram, FaTwitter } from "react-icons/fa";
 
 export default function Dashboard() {
   const { selectedCrypto, updateAnalysisState } = useAnalysisState();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const handleCryptoSelect = (crypto: string) => {
     updateAnalysisState({ selectedCrypto: crypto });
   };
+
+  // تأخير تحميل المكونات الثقيلة لضمان بدء التطبيق بسرعة
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 py-6">
+          <div className="text-center py-20">
+            <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold mb-2">جاري تحميل محلل موجات إليوت</h2>
+            <p className="text-gray-600 dark:text-gray-400">يتم إعداد البيانات والتحليلات الحقيقية...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

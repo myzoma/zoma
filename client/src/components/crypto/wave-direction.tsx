@@ -114,7 +114,12 @@ export function WaveDirection({
   useEffect(() => {
     // جلب البيانات عند تغيير العملة أو الإطار الزمني
     if (selectedCrypto && timeFrame) {
-      fetchWaveData(selectedCrypto, timeFrame);
+      // تأخير طلب اتجاه الموجة لتجنب التحميل الزائد على البداية
+      const timeout = setTimeout(() => {
+        fetchWaveData(selectedCrypto, timeFrame);
+      }, 4000);
+      
+      return () => clearTimeout(timeout);
     }
   }, [selectedCrypto, timeFrame]);
 
