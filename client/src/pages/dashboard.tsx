@@ -107,7 +107,7 @@ export default function Dashboard() {
                 
                 {/* Binance Referral */}
                 <a
-                  href="https://accounts.binance.com/register?ref=YASER123"
+                  href="https://www.binance.com/activity/referral-entry/CPA?ref=CPA_00FUM0TDCA"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -118,7 +118,7 @@ export default function Dashboard() {
 
                 {/* OKX Referral */}
                 <a
-                  href="https://www.okx.com/join/YASER"
+                  href="https://okx.com/join/87866448"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -131,7 +131,7 @@ export default function Dashboard() {
 
                 {/* Bybit Referral */}
                 <a
-                  href="https://www.bybit.com/invite?ref=YASER"
+                  href="https://www.bybit.com/invite?ref=KZDG3MB"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
