@@ -350,14 +350,16 @@ export function WaveAnalysisPanel() {
                         // استخدام نقاط الدوران الحقيقية المكتشفة من التحليل
                         const realPivots = analysisResult.pivots || [];
                         
-                        // إنشاء بيانات الشارت من النقاط الحقيقية فقط
+                        // إنشاء بيانات الشارت من النقاط الحقيقية - 5 موجات فقط (Elliott Wave)
                         const chartData = realPivots.length > 0 
-                          ? realPivots.slice(0, 8).map((pivot: any, index: number) => ({
+                          ? realPivots.slice(0, 5).map((pivot: any, index: number) => ({
                               point: index + 1,
-                              price: pivot.price,
-                              label: `${pivot.type === 'high' ? 'قمة' : 'قاع'} ${index + 1}`,
+                              price: parseFloat(pivot.price) || 0,
+                              label: bestPattern.type === 'motive' 
+                                ? `موجة ${index + 1}` 
+                                : `موجة ${['A', 'B', 'C'][index] || (index + 1)}`,
                               type: pivot.type,
-                              time: new Date(pivot.time).toLocaleDateString('ar')
+                              time: pivot.time ? new Date(pivot.time).toLocaleDateString('ar') : ''
                             }))
                           : [];
 
@@ -438,17 +440,34 @@ export function WaveAnalysisPanel() {
                                         axisLine={false}
                                         tickLine={false}
                                         tick={{ fontSize: 12 }}
+                                        tickFormatter={(value, index) => {
+                                          const data = chartData[index];
+                                          return data ? data.label : `${value}`;
+                                        }}
                                       />
                                       <YAxis 
-                                        domain={['dataMin - 100', 'dataMax + 100']}
+                                        domain={['auto', 'auto']}
                                         axisLine={false}
                                         tickLine={false}
                                         tick={{ fontSize: 12 }}
-                                        tickFormatter={(value) => `$${value?.toLocaleString()}`}
+                                        tickFormatter={(value) => {
+                                          if (value >= 1000) {
+                                            return `$${(value / 1000).toFixed(1)}K`;
+                                          }
+                                          return `$${value?.toFixed(2)}`;
+                                        }}
                                       />
                                       <Tooltip 
-                                        formatter={(value: any, name: any) => [`$${value?.toLocaleString()}`, 'السعر الحقيقي من OKX']}
-                                        labelFormatter={(label) => `النقطة ${label}`}
+                                        formatter={(value: any, name: any) => {
+                                          const formattedValue = value >= 1000 
+                                            ? `$${(value / 1000).toFixed(2)}K` 
+                                            : `$${value?.toFixed(2)}`;
+                                          return [formattedValue, 'السعر الحقيقي من OKX'];
+                                        }}
+                                        labelFormatter={(label, payload) => {
+                                          const data = payload?.[0]?.payload;
+                                          return data ? `${data.label} - ${data.time}` : `النقطة ${label}`;
+                                        }}
                                         contentStyle={{
                                           backgroundColor: 'var(--background)',
                                           border: '1px solid var(--border)',
