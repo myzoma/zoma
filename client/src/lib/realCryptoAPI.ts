@@ -70,14 +70,17 @@ class FreeRealDataProvider {
     });
 
     try {
-      // جلب بيانات جميع العملات مرة واحدة
+      // جلب بيانات جميع العملات مرة واحدة مع تعطيل الكاش للحصول على أحدث الأسعار
       const response = await fetch(
-        `https://www.okx.com/api/v5/market/tickers?instType=SPOT`,
+        `https://www.okx.com/api/v5/market/tickers?instType=SPOT&t=${Date.now()}`,
         {
           headers: {
             'Accept': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          }
+          },
+          cache: 'no-store'
         }
       );
 

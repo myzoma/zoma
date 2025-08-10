@@ -34,6 +34,9 @@ export function WaveAnalysisPanel() {
     try {
       console.log(`جلب البيانات التاريخية الحقيقية لـ ${symbol} على إطار ${timeframe}`);
       
+      // إضافة timestamp للحصول على أحدث البيانات
+      const timestamp = Date.now();
+      
       // تحويل رمز العملة إلى تنسيق OKX
       const okxSymbol = symbol.replace('/', '-');
       
@@ -47,12 +50,14 @@ export function WaveAnalysisPanel() {
       
       const bar = barMap[timeframe] || '4H';
       
-      // جلب آخر 100 شمعة
+      // جلب آخر 300 شمعة للحصول على بيانات أكثر دقة وشاملة
       const response = await fetch(
-        `https://www.okx.com/api/v5/market/history-candles?instId=${okxSymbol}&bar=${bar}&limit=100`,
+        `https://www.okx.com/api/v5/market/candles?instId=${okxSymbol}&bar=${bar}&limit=300&t=${timestamp}`,
         {
           headers: {
             'Accept': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
           }
         }
       );
@@ -79,6 +84,12 @@ export function WaveAnalysisPanel() {
 
       // ترتيب البيانات من الأقدم للأحدث
       candleData.reverse();
+      
+      // إضافة أحدث سعر في نهاية البيانات
+      if (candleData.length > 0) {
+        const latestPrice = candleData[candleData.length - 1].close;
+        console.log(`آخر سعر لـ ${symbol}: $${latestPrice.toFixed(2)}`);
+      }
       
       console.log(`تم جلب ${candleData.length} شمعة حقيقية من OKX لـ ${symbol}`);
       return candleData;
@@ -163,12 +174,20 @@ export function WaveAnalysisPanel() {
   };
 
   useEffect(() => {
-    // تأخير التحليل لتجنب التحميل الزائد على البداية
+    // تأخير التحليل الأولي ثم تحديث منتظم كل دقيقة
     const timeout = setTimeout(() => {
       runAnalysis();
-    }, 6000);
+    }, 2000);
     
-    return () => clearTimeout(timeout);
+    // تحديث البيانات كل دقيقة للحصول على أحدث الأسعار
+    const interval = setInterval(() => {
+      runAnalysis();
+    }, 60000);
+    
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [selectedCrypto, timeFrame]);
 
   const renderPatternCard = (pattern: any) => {

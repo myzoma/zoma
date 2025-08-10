@@ -33,8 +33,8 @@ class ElliottWaveAnalyzer {
         };
     }
 
-    // حساب Pivot High و Pivot Low بدقة أكبر
-    findPivots(data, leftBars = 4, rightBars = 4) {
+    // حساب Pivot High و Pivot Low بدقة أكبر مع تحسين الحساسية
+    findPivots(data, leftBars = 3, rightBars = 3) {
         const pivots = [];
         
         for (let i = leftBars; i < data.length - rightBars; i++) {
@@ -82,8 +82,8 @@ class ElliottWaveAnalyzer {
         return pivots.sort((a, b) => a.index - b.index);
     }
 
-    // إنشاء ZigZag محسن مع فلترة الضوضاء
-    createZigZag(pivots, minChangePercent = 1.0) {
+    // إنشاء ZigZag محسن مع فلترة الضوضاء بحساسية أفضل
+    createZigZag(pivots, minChangePercent = 0.5) {
         if (pivots.length < 2) return [];
         
         const zigzag = [pivots[0]];

@@ -78,10 +78,10 @@ export function MarketData() {
       fetchRealData();
     }, 2000);
     
-    // تحديث البيانات كل 3 دقائق بدلاً من كل دقيقة
+    // تحديث البيانات كل 30 ثانية للحصول على أحدث الأسعار
     const interval = setInterval(() => {
       fetchRealData();
-    }, 180000);
+    }, 30000);
     
     return () => {
       clearTimeout(initialTimeout);

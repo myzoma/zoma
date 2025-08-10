@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -52,25 +53,20 @@ app.use((req, res, next) => {
     // setting up all the other routes so the catch-all route
     // doesn't interfere with the other routes
     if (app.get("env") === "development") {
+      // Add timeout to prevent hanging
+      const viteSetupPromise = setupVite(app, server);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Vite setup timeout')), 5000)
+      );
+      
       try {
-        await setupVite(app, server);
+        await Promise.race([viteSetupPromise, timeoutPromise]);
       } catch (viteError) {
-        console.error("Vite setup failed, serving basic HTML:", viteError);
-        // Fallback to simple static serving if Vite fails
+        console.error("Vite setup failed or timed out:", viteError);
+        // Serve client files directly as fallback
+        app.use(express.static('client'));
         app.get('*', (req, res) => {
-          res.send(`
-            <!DOCTYPE html>
-            <html>
-              <head><title>Crypto Dashboard Loading</title></head>
-              <body>
-                <div style="text-align: center; padding: 50px;">
-                  <h1>🔄 Crypto Dashboard Starting...</h1>
-                  <p>Application is initializing. Please refresh in a moment.</p>
-                  <script>setTimeout(() => location.reload(), 3000);</script>
-                </div>
-              </body>
-            </html>
-          `);
+          res.sendFile(path.join(process.cwd(), 'client', 'index.html'));
         });
       }
     } else {
