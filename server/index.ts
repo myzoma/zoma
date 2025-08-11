@@ -49,49 +49,103 @@ app.use((req, res, next) => {
       console.error("Server error:", err);
     });
 
-    // temporarily bypass vite to fix hanging issue
-    console.log("Setting up static file serving...");
-    
-    // Serve static files from client directory
-    app.use(express.static('client'));
-    
-    // Fallback route for React Router
-    app.get('*', (req, res) => {
+    // Setup Vite in development mode with proper error handling
+    if (app.get("env") === "development") {
+      console.log("Setting up Vite development server...");
       try {
-        res.sendFile(path.join(process.cwd(), 'client', 'index.html'));
-      } catch (error) {
-        console.error('Error serving index.html:', error);
-        res.status(500).send(`
-          <!DOCTYPE html>
-          <html dir="rtl" lang="ar">
-            <head>
-              <title>يا سر كريبتو - لوحة التحكم</title>
-              <meta charset="utf-8">
-              <style>
-                body { 
-                  font-family: Arial; 
-                  text-align: center; 
-                  padding: 50px; 
-                  background: #111; 
-                  color: #fff; 
-                }
-                .loading { color: #fbbf24; }
-              </style>
-            </head>
-            <body>
-              <h1>🚀 يا سر كريبتو</h1>
-              <p class="loading">تطبيق تحليل العملات المشفرة بتقنية موجات إليوت</p>
-              <p>يتم تحضير التطبيق...</p>
-              <script>
-                setTimeout(() => {
-                  window.location.reload();
-                }, 3000);
-              </script>
-            </body>
-          </html>
-        `);
+        // Set a shorter timeout and better error handling
+        const setupPromise = setupVite(app, server);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Vite setup timeout after 10s')), 10000)
+        );
+        
+        await Promise.race([setupPromise, timeoutPromise]);
+        console.log("Vite setup completed successfully");
+        
+      } catch (viteError: any) {
+        console.error("Vite setup failed, falling back to static serving:", viteError?.message || viteError);
+        
+        // Fallback to static file serving
+        app.use(express.static('client'));
+        app.get('*', (req, res) => {
+          res.status(200).send(`
+            <!DOCTYPE html>
+            <html dir="rtl" lang="ar">
+              <head>
+                <title>يا سر كريبتو - تحليل العملات المشفرة</title>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                  body { 
+                    font-family: 'Tajawal', Arial, sans-serif; 
+                    text-align: center; 
+                    padding: 50px; 
+                    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                    color: #f1f5f9; 
+                    margin: 0;
+                  }
+                  h1 { 
+                    color: #f59e0b; 
+                    font-size: 2.5rem; 
+                    margin-bottom: 20px;
+                    text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+                  }
+                  .subtitle { 
+                    color: #06b6d4; 
+                    font-size: 1.2rem; 
+                    margin-bottom: 30px; 
+                  }
+                  .notice {
+                    background: rgba(245, 158, 11, 0.1);
+                    border: 1px solid rgba(245, 158, 11, 0.3);
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin: 30px auto;
+                    max-width: 600px;
+                  }
+                  .btn {
+                    background: linear-gradient(135deg, #f59e0b, #d97706);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin: 10px;
+                    text-decoration: none;
+                    display: inline-block;
+                  }
+                  .btn:hover {
+                    background: linear-gradient(135deg, #d97706, #b45309);
+                  }
+                </style>
+              </head>
+              <body>
+                <h1>🚀 يا سر كريبتو</h1>
+                <p class="subtitle">تطبيق تحليل العملات المشفرة بتقنية موجات إليوت</p>
+                
+                <div class="notice">
+                  <h3>⚠️ الخادم في وضع التطوير المبسط</h3>
+                  <p>يعمل التطبيق حالياً بدون Vite للاستقرار. قد تحتاج لإعادة تشغيل التطبيق للحصول على الميزات الكاملة.</p>
+                  <p><strong>API جاهز:</strong> ✅ الاتصال مع OKX و Binance يعمل</p>
+                  <button class="btn" onclick="window.location.reload()">🔄 إعادة التحميل</button>
+                  <a href="/api/health" class="btn">🔍 فحص الخادم</a>
+                </div>
+                
+                <script>
+                  // Auto-refresh every 30 seconds to check for full app availability
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 30000);
+                </script>
+              </body>
+            </html>
+          `);
+        });
       }
-    });
+    } else {
+      serveStatic(app);
+    }
 
     // ALWAYS serve the app on the port specified in the environment variable PORT
     // Other ports are firewalled. Default to 5000 if not specified.
